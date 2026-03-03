@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ElderConnect | Modern Home Healthcare</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .landing-card {
+      max-width: 900px;
+      text-align: center;
+    }
+
+    .role-selection {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 50px;
+    }
+
+    .role-box {
+      background: white;
+      padding: 40px;
+      border-radius: 24px;
+      border: 2px solid #f1f5f9;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s;
+    }
+
+    .role-box:hover {
+      border-color: var(--primary);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+
+    .icon-circle {
+      width: 80px;
+      height: 80px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 20px;
+    }
+
+    @media (max-width: 768px) {
+      .role-selection {
+        grid-template-columns: 1fr !important;
+      }
+
+      h1 {
+        font-size: 2.5rem !important;
+      }
+
+      .landing-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="landing-card animate-slide" data-aos="zoom-in">
+    <h1 style="
+          font-size: 3.5rem;
+          font-weight: 800;
+          color: var(--text-main);
+          margin-bottom: 15px;
+        ">
+      Elder<span style="color: var(--primary)">Connect</span>
+    </h1>
+    <p style="
+          color: var(--text-muted);
+          font-size: 1.2rem;
+          max-width: 600px;
+          margin: 0 auto;
+        ">
+      The all-in-one platform connecting patients with trusted nursing
+      professionals for personalized home care.
+    </p>
+
+    <div class="role-selection" style="grid-template-columns: repeat(3, 1fr)">
+      <a href="login.html" class="role-box" data-aos="fade-up" data-aos-delay="100">
+        <div class="icon-circle">
+          <i class="fas fa-heart-pulse"></i>
+        </div>
+        <h3 style="font-size: 1.3rem; font-weight: 800">For Patients</h3>
+        <p style="
+              color: var(--text-muted);
+              margin-top: 10px;
+              font-size: 0.9rem;
+            ">
+          Book nurses, track vitals, and find senior living.
+        </p>
+        <div class="btn btn-primary" style="margin-top: 25px; width: 100%; justify-content: center">
+          Get Started
+        </div>
+      </a>
+
+      <a href="login.html" class="role-box" data-aos="fade-up" data-aos-delay="200">
+        <div class="icon-circle">
+          <i class="fas fa-user-nurse"></i>
+        </div>
+        <h3 style="font-size: 1.3rem; font-weight: 800">For Nurses</h3>
+        <p style="
+              color: var(--text-muted);
+              margin-top: 10px;
+              font-size: 0.9rem;
+            ">
+          Manage schedule and upload diagnostics results.
+        </p>
+        <div class="btn btn-outline" style="margin-top: 25px; width: 100%; justify-content: center">
+          Sign In
+        </div>
+      </a>
+
+      <a href="login.html" class="role-box" data-aos="fade-up" data-aos-delay="300">
+        <div class="icon-circle">
+          <i class="fas fa-home"></i>
+        </div>
+        <h3 style="font-size: 1.3rem; font-weight: 800">Home Manager</h3>
+        <p style="
+              color: var(--text-muted);
+              margin-top: 10px;
+              font-size: 0.9rem;
+            ">
+          Update home details and manage resident requests.
+        </p>
+        <div class="btn btn-outline" style="
+              margin-top: 25px;
+              width: 100%;
+              justify-content: center;
+              border-color: #059669;
+              color: #059669;
+            ">
+          Sign In
+        </div>
+      </a>
+    </div>
+  </div>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+  </script>
+</body>
+
+</html>

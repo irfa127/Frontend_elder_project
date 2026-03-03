@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile | ElderConnect</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app-container">
+  
+    <div class="sidebar" id="dynamicSidebar">
+      
+    </div>
+
+    <main class="main-content">
+      <header class="section-head">
+        <button class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="page-title">Personal Profile</h1>
+        <button class="btn btn-primary" onclick="showToast('Profile Updated!')">
+          Save Changes
+        </button>
+      </header>
+
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px">
+        <!-- Avatar Card -->
+        <div class="glass-card animate-slide" style="text-align: center" data-aos="fade-right">
+          <div style="position: relative; display: inline-block">
+            <img id="profileAvatar" src="https://ui-avatars.com/api/?name=User&size=150" style="
+                  width: 150px;
+                  height: 150px;
+                  border-radius: 50%;
+                  border: 5px solid var(--primary-light);
+                " />
+            <button class="btn btn-primary" style="
+                  position: absolute;
+                  bottom: 5px;
+                  right: 5px;
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 50%;
+                  padding: 0;
+                  justify-content: center;
+                ">
+              <i class="fas fa-camera"></i>
+            </button>
+          </div>
+          <h2 id="profileName" style="margin-top: 20px; font-weight: 800">
+            Loading...
+          </h2>
+          <p id="profileRole" style="color: var(--text-muted); font-weight: 700"></p>
+        </div>
+
+        <!-- Info Card -->
+        <div class="glass-card animate-slide" style="animation-delay: 0.1s" data-aos="fade-left">
+          <h3 style="font-weight: 800; margin-bottom: 25px">
+            Basic Information
+          </h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+            <div>
+              <label style="
+                    display: block;
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    color: var(--text-muted);
+                    margin-bottom: 8px;
+                  ">Full Name</label>
+              <input type="text" class="btn-outline" value="" id="inputName"
+                style="width: 100%; padding: 12px; border-radius: 10px" />
+            </div>
+            <div>
+              <label style="
+                    display: block;
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    color: var(--text-muted);
+                    margin-bottom: 8px;
+                  ">Email Address</label>
+              <input type="email" class="btn-outline" value="" id="inputEmail"
+                style="width: 100%; padding: 12px; border-radius: 10px" />
+            </div>
+            <div>
+              <label style="
+                    display: block;
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    color: var(--text-muted);
+                    margin-bottom: 8px;
+                  ">Phone Number</label>
+              <input type="text" class="btn-outline" value="" id="inputPhone"
+                style="width: 100%; padding: 12px; border-radius: 10px" placeholder="+1 (555) 000-0000" />
+            </div>
+            <div>
+              <label style="
+                    display: block;
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    color: var(--text-muted);
+                    margin-bottom: 8px;
+                  ">Address</label>
+              <input type="text" class="btn-outline" value="" id="inputAddress"
+                style="width: 100%; padding: 12px; border-radius: 10px" placeholder="City, State" />
+            </div>
+          </div>
+
+          <h3 style="font-weight: 800; margin: 35px 0 25px">
+            Security Settings
+          </h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+            <div>
+              <label style="
+                    display: block;
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    color: var(--text-muted);
+                    margin-bottom: 8px;
+                  ">Change Password</label>
+              <div class="password-wrapper">
+                <input type="password" class="btn-outline password-input" id="inputPassword"
+                  style="width: 100%; padding: 12px; border-radius: 10px" placeholder="Enter new password" />
+                <i class="fas fa-eye-slash password-toggle"
+                  onclick="togglePasswordVisibility('inputPassword', this)"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input type="file" id="avatarInput" style="display: none" accept="image/*" onchange="uploadAvatar(this)" />
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/nurseprofile.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+  </script>
+</body>
+
+</html>

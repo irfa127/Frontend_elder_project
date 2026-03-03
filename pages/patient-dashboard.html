@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | ElderConnect Patient</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/patient.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app-container">
+    <div class="sidebar">
+      <a href="/frontend/index.html" class="nav-brand">
+        <i class="fas fa-hand-holding-medical"></i> ElderConnect
+      </a>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="patient-dashboard.html" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-appointments.html" class="nav-link"><i class="fas fa-calendar-check"></i> Appointments</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-senior-living.html" class="nav-link"><i class="fas fa-hotel"></i> Senior Living</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-vitals.html" class="nav-link"><i class="fas fa-chart-line"></i> Health Vitals</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-profile.html" class="nav-link"><i class="fas fa-user-circle"></i> My Profile</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </li>
+      </ul>
+    </div>
+
+    <main class="main-content">
+      <header class="section-head">
+        <button class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div>
+          <h1 class="page-title" id="user-greeting">Hello, Patient <i class="fas fa-hand-peace"></i></h1>
+          <p style="color: var(--text-muted); margin-top: 5px">
+            You have one appointment scheduled for today.
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 15px">
+          <img id="user-avatar" src="https://ui-avatars.com/api/?name=User&background=eff6ff&color=3b82f6" alt="Profile"
+            style="
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
+                border: 2px solid white;
+                box-shadow: var(--card-shadow);
+              " />
+        </div>
+      </header>
+
+      <div id="liveTrackingContainer" class="tracking-container animate-slide" style="display: none"
+        data-aos="fade-down">
+        <div class="tracking-title">
+          <span class="badge badge-success" style="padding: 5px 10px">LIVE</span>
+          Nurse Arrival Tracking
+          <span id="txt-eta" style="
+                margin-left: auto;
+                color: var(--primary);
+                font-size: 0.9rem;
+              ">Estimated: 15 mins</span>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-line">
+            <div class="line-progress" id="progress-bar"></div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-icon completed">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="step-label">Booked</div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-icon" id="icon-way">
+              <i class="fas fa-car-side"></i>
+            </div>
+            <div class="step-label">On Way</div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-icon" id="icon-arrived">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="step-label">Arrived</div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="step-icon" id="icon-completed">
+              <i class="fas fa-file-medical"></i>
+            </div>
+            <div class="step-label">Complete</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center">
+          <h3 id="status-text" style="font-size: 1.1rem; font-weight: 800; color: #1e293b">
+            Nurse is preparing...
+          </h3>
+          <p style="color: #64748b; font-size: 0.9rem; margin-top: 5px">
+            Dr. Alice Smith •
+            <a href="#" style="color: var(--primary)">Contact</a>
+          </p>
+        </div>
+      </div>
+
+      <div id="nurseBusyWarning" class="animate-slide" style="display: none; margin-top: 20px" data-aos="fade-in">
+        <div class="glass-card" style="
+              background: #fff1f2;
+              border-color: #fda4af;
+              display: flex;
+              gap: 15px;
+              align-items: start;
+            ">
+          <div style="
+                background: #fee2e2;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+              ">
+            <i class="fas fa-user-clock" style="color: #be123c; font-size: 1.2rem"></i>
+          </div>
+          <div>
+            <h3 style="
+                  color: #be123c;
+                  font-weight: 800;
+                  font-size: 1rem;
+                  margin-bottom: 5px;
+                ">
+              Nurse Currently Busy
+            </h3>
+            <p style="color: #9f1239; font-size: 0.9rem; line-height: 1.5">
+              Your nurse is currently attending another patient at this
+              scheduled time. Please wait, they will update their status soon.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid" style="margin-top: 30px">
+        <div class="stat-card" data-aos="zoom-in" data-aos-delay="100">
+          <span class="stat-label">Blood Pressure</span>
+          <div class="stat-value" style="color: var(--primary)" id="dash-bp">
+            --
+          </div>
+          <span class="badge badge-success" id="dash-bp-status">Normal</span>
+        </div>
+        <div class="stat-card" data-aos="zoom-in" data-aos-delay="200">
+          <span class="stat-label">Heart Rate</span>
+          <div class="stat-value" style="color: var(--danger)" id="dash-hr">
+            -- <small style="font-size: 1rem">BPM</small>
+          </div>
+          <span class="badge badge-warning" id="dash-hr-status">--</span>
+        </div>
+        <div class="stat-card" data-aos="zoom-in" data-aos-delay="300">
+          <span class="stat-label">Last Sugar Level</span>
+          <div class="stat-value" style="color: var(--success)" id="dash-sugar">
+            -- <small style="font-size: 1rem">mg/dL</small>
+          </div>
+          <span class="badge badge-success" id="dash-sugar-status">--</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 30px;">
+        <!-- Recent Reports (Vitals) -->
+        <div class="glass-card animate-slide" data-aos="fade-up">
+          <h3 style="font-weight: 800; font-size: 1.2rem; margin-bottom: 20px">
+            <i class="fas fa-file-medical-alt" style="color: var(--primary)"></i> Recent Health Reports
+          </h3>
+          <ul style="list-style: none" id="reportsList">
+            <li style="text-align: center; color: var(--text-muted)">
+              No reports available.
+            </li>
+          </ul>
+          <a href="patient-vitals.html" class="btn btn-outline" style="width: 100%; justify-content: center">
+            Track All Vitals
+          </a>
+        </div>
+
+        <!-- Recent Visits (Bookings) -->
+        <div class="glass-card animate-slide" data-aos="fade-up" style="animation-delay: 0.1s">
+          <h3 style="font-weight: 800; font-size: 1.2rem; margin-bottom: 20px">
+            <i class="fas fa-history" style="color: var(--success)"></i> Recent Visits
+          </h3>
+          <ul style="list-style: none" id="recentVisitsList">
+            <li style="text-align: center; color: var(--text-muted)">
+              No recent visits found.
+            </li>
+          </ul>
+          <button class="btn btn-outline" style="width: 100%; justify-content: center" onclick="openRecordsModal()">
+            View All Booking Records
+          </button>
+        </div>
+      </div>
+
+      <!-- All Records Modal -->
+      <div id="recordsModal" class="modal">
+        <div class="modal-content animate-slide" style="max-width: 800px; padding: 30px;">
+          <i class="fas fa-times" style="position: absolute; right: 25px; top: 25px; cursor: pointer; color: #64748b;"
+            onclick="closeModal('recordsModal')"></i>
+          <h2 style="font-weight: 800; margin-bottom: 5px">Booking Records</h2>
+          <p style="color: var(--text-muted); margin-bottom: 25px">History of all your appointments and their current
+            status.</p>
+
+          <div id="allRecordsContainer" style="max-height: 50vh; overflow-y: auto;">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Review Modal -->
+      <div id="reviewModal" class="modal">
+        <div class="modal-content animate-slide" style="max-width: 450px; text-align: center; padding: 30px;">
+          <h2 style="margin-bottom: 10px; font-weight: 800;">Rate Your Experience</h2>
+          <p style="color: var(--text-muted); margin-bottom: 25px;">How was your visit with <span
+              id="nurseNameRating">the nurse</span>?</p>
+
+          <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 25px;" id="starContainer">
+            <i class="fas fa-star" data-value="1" style="font-size: 2.2rem; color: #ffd700; cursor: pointer"></i>
+            <i class="fas fa-star" data-value="2" style="font-size: 2.2rem; color: #ffd700; cursor: pointer"></i>
+            <i class="fas fa-star" data-value="3" style="font-size: 2.2rem; color: #ffd700; cursor: pointer"></i>
+            <i class="fas fa-star" data-value="4" style="font-size: 2.2rem; color: #ffd700; cursor: pointer"></i>
+            <i class="fas fa-star" data-value="5" style="font-size: 2.2rem; color: #ffd700; cursor: pointer"></i>
+          </div>
+
+          <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+            <label class="form-label">Optional Comments</label>
+            <textarea id="reviewText" placeholder="Tell us more about the care you received..."
+              style="width: 100%; min-height: 120px; padding: 15px; border: 1px solid #e2e8f0; border-radius: 12px; resize: none;"></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
+            <button class="btn btn-outline" onclick="closeModal('reviewModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="submitReview()">Submit Rating</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/patient.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+  </script>
+</body>
+
+</html>

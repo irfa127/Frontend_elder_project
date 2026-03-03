@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Appointments | ElderConnect</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/patient.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    .apt-card-attractive {
+      background: white;
+      border-radius: 24px;
+      padding: 25px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s;
+      margin-bottom: 25px;
+      border: 1px solid #f1f5f9;
+    }
+
+    .apt-card-attractive:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <div class="sidebar">
+      <a href="../index.html" class="nav-brand">
+        <i class="fas fa-hand-holding-medical"></i> ElderConnect
+      </a>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="patient-dashboard.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-appointments.html" class="nav-link active"><i class="fas fa-calendar-check"></i>
+            Appointments</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-senior-living.html" class="nav-link"><i class="fas fa-hotel"></i> Senior Living</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-vitals.html" class="nav-link"><i class="fas fa-chart-line"></i> Health Vitals</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-profile.html" class="nav-link"><i class="fas fa-user-circle"></i> My Profile</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </li>
+      </ul>
+    </div>
+
+    <main class="main-content">
+      <header class="section-head">
+        <button class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="page-title">My Appointments</h1>
+        <button class="btn btn-primary" onclick="openBooking()">
+          <i class="fas fa-plus"></i> &nbsp; Book New Appointment
+        </button>
+      </header>
+
+      <div id="myAppointmentsContainer" class="animate-fade">
+        <p style="text-align: center; padding: 20px; color: var(--text-muted)">
+          Loading your appointments...
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <div id="bookingModal" class="modal">
+    <div class="modal-content animate-slide" style="max-width: 800px">
+      <i class="fas fa-times" style="
+            position: absolute;
+            right: 25px;
+            top: 25px;
+            cursor: pointer;
+            color: #64748b;
+          " onclick="closeModal('bookingModal')"></i>
+
+      <div id="stepNurseSelection">
+        <h2 style="font-weight: 800; margin-bottom: 5px">
+          Book a New Appointment
+        </h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px">
+          Select a nurse and schedule a time that works for you.
+        </p>
+
+        <div class="nurse-list-container" style="max-height: 50vh; overflow-y: auto">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <div id="stepScheduling" style="display: none">
+        <div style="
+              cursor: pointer;
+              color: var(--primary);
+              font-weight: 700;
+              margin-bottom: 20px;
+            " onclick="backToNurses()">
+          <i class="fas fa-arrow-left"></i> Back to nurse selection
+        </div>
+        <h2 style="font-weight: 800; margin-bottom: 30px">
+          Schedule with <span id="selectedNurseName"></span>
+        </h2>
+        <div class="form-group" style="margin-bottom: 20px">
+          <label>Preferred Date</label>
+          <input type="date" id="bookingDate" class="btn-outline"
+            style="width: 100%; padding: 12px; border-radius: 10px" />
+        </div>
+        <div class="form-group" style="margin-bottom: 10px">
+          <label>Preferred Time</label>
+          <input type="time" class="btn-outline" style="width: 100%; padding: 12px; border-radius: 10px" />
+        </div>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 30px" onclick="finalizeBooking()">
+          Request Appointment
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="reviewModal" class="modal">
+    <div class="modal-content animate-slide" style="max-width: 450px; text-align: center">
+      <h2 style="margin-bottom: 15px">Rate Your Experience</h2>
+      <div style="
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+          " id="starContainer">
+        <i class="fas fa-star" data-value="1" style="font-size: 2rem; color: #ffd700; cursor: pointer"></i>
+        <i class="fas fa-star" data-value="2" style="font-size: 2rem; color: #ffd700; cursor: pointer"></i>
+        <i class="fas fa-star" data-value="3" style="font-size: 2rem; color: #ffd700; cursor: pointer"></i>
+        <i class="fas fa-star" data-value="4" style="font-size: 2rem; color: #ffd700; cursor: pointer"></i>
+        <i class="fas fa-star" data-value="5" style="font-size: 2rem; color: #ffd700; cursor: pointer"></i>
+      </div>
+      <textarea id="reviewText" placeholder="Write your feedback... (Optional)" style="
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 20px;
+          "></textarea>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
+        <button class="btn btn-outline" onclick="closeModal('reviewModal')">
+          Skip
+        </button>
+        <button class="btn btn-primary" onclick="submitReview()">
+          Submit Review
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/patient-appointments.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    // Initializing restricted date
+    const dateInput = document.getElementById("bookingDate");
+    if (dateInput) {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+      dateInput.min = `${year}-${month}-${day}`;
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Health Vitals | ElderConnect Patient</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/patient.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <a href="/frontend/index.html" class="nav-brand">
+        <i class="fas fa-hand-holding-medical"></i> ElderConnect
+      </a>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="patient-dashboard.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-appointments.html" class="nav-link"><i class="fas fa-calendar-check"></i> Appointments</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-senior-living.html" class="nav-link"><i class="fas fa-hotel"></i> Senior Living</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-vitals.html" class="nav-link active"><i class="fas fa-chart-line"></i> Health Vitals</a>
+        </li>
+        <li class="nav-item">
+          <a href="patient-profile.html" class="nav-link"><i class="fas fa-user-circle"></i> My Profile</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </li>
+      </ul>
+    </div>
+
+    <main class="main-content">
+      <header class="section-head">
+        <button class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="page-title">Health Vitals Dashboard</h1>
+        <!-- <button class="btn btn-primary">
+            <i class="fas fa-download"></i> Export Data
+          </button> -->
+      </header>
+
+      <div class="vitals-grid" id="vitalsGrid" data-aos="zoom-in">
+
+        <p style="text-align: center; width: 100%; grid-column: span 4">
+          Loading vitals...
+        </p>
+      </div>
+
+      <div class="glass-card animate-slide" style="
+            margin-top: 30px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+          " data-aos="fade-up">
+        <div style="display: flex; gap: 20px; align-items: start">
+          <div style="
+                width: 50px;
+                height: 50px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+              ">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div>
+            <h3 style="font-weight: 800; margin-bottom: 5px">
+              AI Health Analysis
+            </h3>
+            <p style="font-size: 0.95rem; opacity: 0.9; line-height: 1.5" id="aiAnalysisText">
+              Data insufficient for full analysis. Please upload recent
+              vitals.
+            </p>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="glass-card animate-slide" style="margin-top: 30px; animation-delay: 0.2s" data-aos="fade-up">
+        <h3 style="font-weight: 800; margin-bottom: 20px">
+          Historical Measurements
+        </h3>
+        <table style="width: 100%; border-collapse: collapse">
+          <thead>
+            <tr style="border-bottom: 2px solid #e2e8f0; text-align: left">
+              <th style="
+                    padding: 15px;
+                    color: #64748b;
+                    font-size: 0.8rem;
+                    text-transform: uppercase;
+                  ">
+                Date
+              </th>
+              <th style="
+                    padding: 15px;
+                    color: #64748b;
+                    font-size: 0.8rem;
+                    text-transform: uppercase;
+                  ">
+                Time
+              </th>
+              <th style="
+                    padding: 15px;
+                    color: #64748b;
+                    font-size: 0.8rem;
+                    text-transform: uppercase;
+                  ">
+                Type
+              </th>
+              <th style="
+                    padding: 15px;
+                    color: #64748b;
+                    font-size: 0.8rem;
+                    text-transform: uppercase;
+                  ">
+                Value
+              </th>
+              <th style="
+                    padding: 15px;
+                    color: #64748b;
+                    font-size: 0.8rem;
+                    text-transform: uppercase;
+                  ">
+                Unit
+              </th>
+            </tr>
+          </thead>
+          <tbody id="vitalsHistoryBody">
+
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+  <script src="../js/main.js"></script>
+  <script src="../js/vitals.js"></script>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+  </script>
+</body>
+
+</html>

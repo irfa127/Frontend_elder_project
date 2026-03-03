@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | ElderConnect Nurse</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/nurse.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <a href="/frontend/index.html" class="nav-brand">
+        <i class="fas fa-hand-holding-medical"></i> ElderConnect
+      </a>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="nurse-dashboard.html" class="nav-link active">
+            <i class="fas fa-columns"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="nurse-portal.html" class="nav-link">
+            <i class="fas fa-calendar-check"></i> Appointment Portal
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="nurse-profile.html" class="nav-link">
+            <i class="fas fa-user-md"></i> My Profile
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link logout-link">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <main class="main-content">
+      <header class="section-head">
+        <button class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div>
+          <h1 class="page-title">Nurse Overview</h1>
+          <p style="color: var(--text-muted); margin-top: 5px">
+            Today's care schedule is ready for you
+          </p>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 20px">
+          <div style="
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: white;
+                padding: 10px 20px;
+                border-radius: 30px;
+                border: 1px solid var(--border);
+              ">
+            <span style="font-size: 0.85rem; font-weight: 700">
+              Active Status:
+            </span>
+            <span style="
+                  color: var(--success);
+                  font-weight: 800;
+                  font-size: 0.85rem;
+                ">
+              AVAILABLE
+            </span>
+            <div style="
+                  width: 10px;
+                  height: 10px;
+                  background: var(--success);
+                  border-radius: 50%;
+                  box-shadow: 0 0 10px var(--success);
+                "></div>
+          </div>
+          <img id="nurse-avatar" src="https://ui-avatars.com/api/?name=Alice+Smith&background=3b82f6&color=fff"
+            alt="Profile" style="
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
+                border: 2px solid white;
+                box-shadow: var(--card-shadow);
+              " />
+        </div>
+      </header>
+
+      <div class="stats-grid">
+        <div class="stat-card" data-aos="zoom-in" data-aos-delay="100">
+          <span class="stat-label">Pending Requests</span>
+          <div class="stat-value" style="color: var(--warning)" id="stat-pending">
+            --
+          </div>
+          <p style="
+                font-size: 0.7rem;
+                color: var(--text-muted);
+                font-weight: 600;
+              ">
+            ACTION REQUIRED
+          </p>
+        </div>
+        <div class="stat-card" data-aos="zoom-in" data-aos-delay="200">
+          <span class="stat-label">Tasks Completed</span>
+          <div class="stat-value" style="color: var(--success)" id="stat-completed">
+            --
+          </div>
+          <p style="
+                font-size: 0.7rem;
+                color: var(--text-muted);
+                font-weight: 600;
+              ">
+            TOTAL
+          </p>
+        </div>
+        <div class="stat-card" data-aos="zoom-in" data-aos-delay="300">
+          <span class="stat-label">Average Rating</span>
+          <div class="stat-value" style="color: var(--primary)" id="nurse-rating-value">
+            --
+            <small style="font-size: 1rem"><i class="fas fa-star"></i></small>
+          </div>
+          <p style="font-size: 0.7rem; color: var(--primary); font-weight: 600">
+            EXCELLENT
+          </p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px">
+        <div class="glass-card animate-slide" id="next-visit-card" data-aos="fade-up">
+          <h3 style="font-weight: 800; font-size: 1.25rem; margin-bottom: 25px">
+            Up Next: Home Visit
+          </h3>
+          <div id="next-visit-container">
+            <p style="color: var(--text-muted)">Loading next visit...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/nurse.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/nursedashbord.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+  </script>
+</body>
+
+</html>

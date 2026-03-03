@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Home | ElderConnect</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/oah.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <a href="/frontend/index.html" class="nav-brand">
+        <i class="fas fa-hand-holding-medical"></i> ElderConnect
+      </a>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="oah-dashboard.html" class="nav-link"><i class="fas fa-columns"></i> Overview</a>
+        </li>
+        <li class="nav-item">
+          <a href="oah-portal.html" class="nav-link active"><i class="fas fa-hotel"></i> Manage Home</a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </li>
+      </ul>
+    </div>
+
+    <main class="main-content">
+      <header class="section-head">
+        <button class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="page-title">Manage Community Details</h1>
+        <button class="btn btn-primary" onclick="showToast('Home details updated successfully!')"
+          style="background: #059669">
+          Save Changes
+        </button>
+      </header>
+
+      <div class="config-grid">
+        <div class="glass-card animate-slide" style="padding: 30px" data-aos="fade-right">
+          <h3 style="font-weight: 800; margin-bottom: 25px">
+            Edit Card Information
+          </h3>
+
+          <input type="hidden" id="communityId" />
+
+          <div class="form-group" style="margin-bottom: 20px">
+            <label class="form-label">Community Name</label>
+            <input type="text" class="form-input" id="editName" placeholder="e.g. Harmony Gardens"
+              oninput="updatePreview()" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px">
+            <label class="form-label">Location</label>
+            <input type="text" class="form-input" id="editLocation" placeholder="e.g. Chennai, India"
+              oninput="updatePreview()" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px">
+            <label class="form-label">Description</label>
+            <textarea class="form-input" id="editDesc" rows="3" placeholder="Short description..."
+              oninput="updatePreview()"></textarea>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px">
+            <label class="form-label">Contact Number</label>
+            <input type="text" class="form-input" id="editPhone" placeholder="e.g. +91 9876543210"
+              oninput="updatePreview()" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px">
+            <label class="form-label">Pricing (per month)</label>
+            <input type="text" class="form-input" id="editPrice" placeholder="e.g. ₹35,000" oninput="updatePreview()" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px">
+            <label class="form-label">Cover Image URL</label>
+            <input type="text" class="form-input" id="editImg"
+              value="https://images.unsplash.com/photo-1549439602-43ebca23d7af?w=600" placeholder="https://..."
+              oninput="updatePreview()" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Specialty Label</label>
+            <select class="form-input" id="editLabel" onchange="updatePreview()">
+              <option value="Personalized Care">Personalized Care</option>
+              <option value="Luxury Living">Luxury Living</option>
+              <option value="Medical Focus">Medical Focus</option>
+              <option value="Assisted Living">Assisted Living</option>
+            </select>
+          </div>
+
+          <!-- New Facilities Section -->
+          <div class="form-group" style="margin-top: 20px">
+            <label class="form-label">Facilities</label>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px">
+              <label style="
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                    font-size: 0.9rem;
+                  ">
+                <input type="checkbox" class="facility-check" value="24/7 Care" onchange="updatePreview()" />
+                24/7 Care
+              </label>
+              <label style="
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                    font-size: 0.9rem;
+                  ">
+                <input type="checkbox" class="facility-check" value="Dining" onchange="updatePreview()" />
+                Dining
+              </label>
+              <label style="
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                    font-size: 0.9rem;
+                  ">
+                <input type="checkbox" class="facility-check" value="AC Rooms" onchange="updatePreview()" />
+                AC Rooms
+              </label>
+              <label style="
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                    font-size: 0.9rem;
+                  ">
+                <input type="checkbox" class="facility-check" value="Wi-Fi" onchange="updatePreview()" />
+                Wi-Fi
+              </label>
+              <label style="
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                    font-size: 0.9rem;
+                  ">
+                <input type="checkbox" class="facility-check" value="Garden" onchange="updatePreview()" />
+                Garden
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-card animate-slide" style="animation-delay: 0.1s" data-aos="fade-left">
+          <h3 style="
+                font-weight: 800;
+                margin-bottom: 25px;
+                color: var(--text-muted);
+              ">
+            Current Card Preview
+          </h3>
+
+          <div class="community-card" style="box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1)">
+            <div class="community-image-container">
+              <span class="label-badge label-premium" id="prevBadge">Personalized Care</span>
+              <img src="https://images.unsplash.com/photo-1549439602-43ebca23d7af?w=600" class="community-image"
+                id="prevImg" />
+            </div>
+            <div class="community-content">
+              <h3 class="community-name" id="prevName">Community Name</h3>
+              <div class="community-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span id="prevLocation">Location</span>
+              </div>
+              <p class="community-desc" id="prevDesc">
+                Description will appear here.
+              </p>
+              <div class="price-tag" style="margin: 10px 0; color: #059669" id="prevPrice">
+                ₹0 per month
+              </div>
+              <button class="btn btn-green" style="width: 100%" disabled>
+                View Details
+              </button>
+            </div>
+          </div>
+
+          <div style="
+                margin-top: 20px;
+                padding: 15px;
+                background: #eff6ff;
+                border-radius: 12px;
+                color: #1e40af;
+                font-size: 0.85rem;
+              ">
+            <i class="fas fa-info-circle"></i> Changes reflect instantly in
+            the Patient Senior Living portal once saved.
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/oahportal.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+  </script>
+</body>
+
+</html>
