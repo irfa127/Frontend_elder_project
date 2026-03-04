@@ -85,6 +85,7 @@ async function refreshDashboard() {
     const now = new Date();
 
     // Filter logic: NOT COMPLETED and future datetime
+    
     const upcoming = appointments
       .filter((a) => a.status !== "COMPLETED")
       .filter((a) => {
