@@ -108,19 +108,29 @@ async function refreshDashboard(userId) {
         } else {
           visitList.innerHTML = completedApts.map(apt => {
             const nurseName = (apt.nurse_name || "Nurse Visit").replace(/'/g, "&#39;");
-            const rateBtn = !apt.has_review
-              ? `<button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${nurseName}')" style="padding: 5px 10px; font-size: 0.7rem;">Rate</button>`
-              : `<span style="font-size: 0.7rem; color: #10b981; font-weight: 700;"><i class="fas fa-star"></i> Rated</span>`;
+            const isRated = apt.has_review;
+
+            // Clickable row opens review form if not yet rated
+            const clickAttr = !isRated
+              ? `onclick="openReviewModal(${apt.id}, '${nurseName}')" style="cursor: pointer;"`
+              : `style="cursor: default;"`;
+
+            const badge = isRated
+              ? `<span style="font-size: 0.7rem; color: #10b981; font-weight: 700; white-space: nowrap;"><i class="fas fa-star"></i> Rated</span>`
+              : `<span style="font-size: 0.7rem; color: var(--primary); font-weight: 700; white-space: nowrap;"><i class="fas fa-pen"></i> Tap to Rate</span>`;
+
             return `
-            <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+            <li ${clickAttr} style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border); border-radius: 10px; padding: 10px; transition: background 0.15s; ${!isRated ? 'hover-bg: #f0fdf4;' : ''}"
+              onmouseenter="${!isRated ? "this.style.background='#f0fdf4'" : ''}"
+              onmouseleave="${!isRated ? "this.style.background=''" : ''}">
               <div style="width: 45px; height: 45px; background: #f0fdf4; color: #10b981; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <i class="fas fa-check-circle"></i>
               </div>
-              <div style="flex: 1">
+              <div style="flex: 1; min-width: 0;">
                 <p style="font-weight: 700; font-size: 0.9rem">${apt.nurse_name || "Nurse Visit"}</p>
                 <p style="font-size: 0.75rem; color: var(--text-muted)">${new Date(apt.appointment_date).toLocaleDateString()} • ${apt.service_type || "General Care"}</p>
               </div>
-              ${rateBtn}
+              ${badge}
             </li>`;
           }).join("");
         }
