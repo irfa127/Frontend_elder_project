@@ -167,12 +167,28 @@ async function updateInquiryStatus(id, newStatus) {
   }
 }
 
+// function viewInquiryDetails(id)
+//   const inq = window.currentInquiries.find((i) => i.booking_id === id);
+//   if (!inq) return;
+//   const applicant = inq.applicant || {};
+
+//   alert(`
+//          Inquiry Details:
+//          Resident: ${inq.resident_name}
+//          Age: ${inq.resident_age}
+//          Applicant: ${applicant.name} (${inq.relation})
+//          Contact: ${applicant.phone} | ${applicant.email}
+//          Needs: ${inq.medical_needs}
+//          Requests: ${inq.special_requests}
+//        `);
+// }
+
 function viewInquiryDetails(id) {
   const inq = window.currentInquiries.find((i) => i.booking_id === id);
   if (!inq) return;
   const applicant = inq.applicant || {};
 
-  if (applicant) {
+ 
     alert(`
       inquiry Details:
       Resident:${applicant.name},
@@ -183,4 +199,4 @@ function viewInquiryDetails(id) {
       Request : ${inq.special_requests},
     `);
   }
-}
+
