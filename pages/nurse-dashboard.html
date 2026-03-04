@@ -132,13 +132,23 @@
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px">
+      <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px">
         <div class="glass-card animate-slide" id="next-visit-card" data-aos="fade-up">
           <h3 style="font-weight: 800; font-size: 1.25rem; margin-bottom: 25px">
             Up Next: Home Visit
           </h3>
           <div id="next-visit-container">
             <p style="color: var(--text-muted)">Loading next visit...</p>
+          </div>
+        </div>
+
+        <!-- Recent Patient Reviews -->
+        <div class="glass-card animate-slide" data-aos="fade-up" data-aos-delay="100">
+          <h3 style="font-weight: 800; font-size: 1.1rem; margin-bottom: 20px">
+            <i class="fas fa-star" style="color: #f59e0b"></i> Recent Patient Reviews
+          </h3>
+          <div id="nurse-reviews-list">
+            <p style="text-align: center; color: var(--text-muted); padding: 20px;">Loading reviews...</p>
           </div>
         </div>
       </div>

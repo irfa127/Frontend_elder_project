@@ -130,8 +130,104 @@ async function refreshDashboard() {
     } else {
       nextVisitContainer.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px; width: 100%;">No upcoming visits scheduled.</p>`;
     }
+    // Load reviews panel
+    await loadNurseReviews(user.id);
+
   } catch (e) {
     console.error("Dashboard Refresh Error:", e);
+  }
+}
+
+async function loadNurseReviews(nurseId) {
+  const listEl = document.getElementById("nurse-reviews-list");
+  if (!listEl) return;
+
+  try {
+    // Fetch all nurse appointments
+    const res = await fetch(`${API_URL}/appointments/nurse/${nurseId}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    });
+    if (!res.ok) throw new Error("Failed");
+
+    const appointments = await res.json();
+
+    // Only look at COMPLETED ones
+    const completed = appointments.filter(
+      a => (a.status || "").trim().toUpperCase() === "COMPLETED"
+    );
+
+    if (completed.length === 0) {
+      listEl.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px;">No completed visits yet.</p>`;
+      return;
+    }
+
+    // For each completed appointment, check if a review exists
+    const reviewChecks = await Promise.all(
+      completed.map(async apt => {
+        try {
+          const rRes = await fetch(`${API_URL}/reviews/check/${apt.id}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+          });
+          if (!rRes.ok) return null;
+          const data = await rRes.json();
+          return data.exists ? { apt, review: data } : null;
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    // Filter only those with reviews, then take the latest 5
+    const reviewedApts = reviewChecks
+      .filter(r => r !== null)
+      .sort((a, b) => new Date(b.apt.appointment_date) - new Date(a.apt.appointment_date))
+      .slice(0, 5);
+
+    if (reviewedApts.length === 0) {
+      listEl.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px;">No patient reviews yet.</p>`;
+      return;
+    }
+
+    // Fetch nurse user data to get overall rating
+    let overallRating = null;
+    try {
+      const uRes = await fetch(`${API_URL}/users/${nurseId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      });
+      if (uRes.ok) {
+        const uData = await uRes.json();
+        overallRating = uData.rating ? Number(uData.rating).toFixed(1) : null;
+      }
+    } catch { }
+
+    // Render each reviewed appointment
+    listEl.innerHTML = reviewedApts.map(({ apt }) => {
+      const dateStr = new Date(apt.appointment_date).toLocaleDateString();
+      const patientName = apt.patient_name || "Patient";
+
+      return `
+        <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+          <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(patientName)}&background=eff6ff&color=3b82f6"
+               style="width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;" />
+          <div style="flex: 1; min-width: 0;">
+            <p style="font-weight: 700; font-size: 0.85rem; margin-bottom: 2px;">${patientName}</p>
+            <p style="font-size: 0.72rem; color: var(--text-muted);">${dateStr} • ${apt.service_type || "General Care"}</p>
+            <div style="margin-top: 4px;">
+              <i class="fas fa-star" style="color: #f59e0b; font-size: 0.8rem;"></i>
+              <span style="font-size: 0.78rem; font-weight: 700; color: #1e293b;">Reviewed</span>
+            </div>
+          </div>
+        </div>`;
+    }).join("");
+
+    // Show total count note
+    if (overallRating) {
+      listEl.innerHTML += `<p style="text-align: center; font-size: 0.78rem; color: var(--text-muted); margin-top: 5px;">Overall Rating: <strong style="color: var(--primary);">${overallRating} ★</strong></p>`;
+    }
+
+  } catch (e) {
+    console.error("Reviews load error:", e);
+    listEl.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px;">Could not load reviews.</p>`;
   }
 }
 

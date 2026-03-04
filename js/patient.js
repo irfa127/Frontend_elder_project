@@ -98,7 +98,7 @@ async function refreshDashboard(userId) {
 
       // Show completed appointments in Recent Visits
       const completedApts = appointments
-        .filter(a => a.status.toLowerCase() === "completed")
+        .filter(a => (a.status || "").trim().toUpperCase() === "COMPLETED")
         .sort((a, b) => new Date(b.appointment_date) - new Date(a.appointment_date));
 
       const visitList = document.getElementById("recentVisitsList");
@@ -106,7 +106,12 @@ async function refreshDashboard(userId) {
         if (completedApts.length === 0) {
           visitList.innerHTML = `<li style="text-align: center; color: var(--text-muted)">No recent visits found.</li>`;
         } else {
-          visitList.innerHTML = completedApts.slice(0, 3).map(apt => `
+          visitList.innerHTML = completedApts.map(apt => {
+            const nurseName = (apt.nurse_name || "Nurse Visit").replace(/'/g, "&#39;");
+            const rateBtn = !apt.has_review
+              ? `<button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${nurseName}')" style="padding: 5px 10px; font-size: 0.7rem;">Rate</button>`
+              : `<span style="font-size: 0.7rem; color: #10b981; font-weight: 700;"><i class="fas fa-star"></i> Rated</span>`;
+            return `
             <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
               <div style="width: 45px; height: 45px; background: #f0fdf4; color: #10b981; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <i class="fas fa-check-circle"></i>
@@ -115,13 +120,9 @@ async function refreshDashboard(userId) {
                 <p style="font-weight: 700; font-size: 0.9rem">${apt.nurse_name || "Nurse Visit"}</p>
                 <p style="font-size: 0.75rem; color: var(--text-muted)">${new Date(apt.appointment_date).toLocaleDateString()} • ${apt.service_type || "General Care"}</p>
               </div>
-              ${!apt.has_review ? `
-                <button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${(apt.nurse_name || "the nurse").replace(/'/g, "\\'")}')  " style="padding: 5px 10px; font-size: 0.7rem;">Rate</button>
-              ` : `
-                <span style="font-size: 0.7rem; color: #10b981; font-weight: 700;"><i class="fas fa-star"></i> Rated</span>
-              `}
-            </li>
-          `).join("");
+              ${rateBtn}
+            </li>`;
+          }).join("");
         }
       }
     }
@@ -221,9 +222,17 @@ function openRecordsModal() {
     container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 40px;">No records found.</p>`;
   } else {
     container.innerHTML = allAppointments.sort((a, b) => b.id - a.id).map(apt => {
+      const statusUp = (apt.status || "").trim().toUpperCase();
       let statusColor = "#64748b";
-      if (apt.status.toLowerCase() === 'completed') statusColor = "#10b981";
-      if (apt.status.toLowerCase() === 'pending') statusColor = "#f59e0b";
+      if (statusUp === "COMPLETED") statusColor = "#10b981";
+      if (statusUp === "PENDING") statusColor = "#f59e0b";
+      const nurseName = (apt.nurse_name || "Nurse visit").replace(/'/g, "&#39;");
+
+      const actionBtn = (statusUp === "COMPLETED" && !apt.has_review)
+        ? `<button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${nurseName}')">Rate Visit</button>`
+        : apt.has_review
+          ? `<span style="color: #10b981; font-weight: 700; font-size: 0.9rem;"><i class="fas fa-star"></i> Rated</span>`
+          : "";
 
       return `
             <div style="background: #f8fafc; border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
@@ -236,15 +245,8 @@ function openRecordsModal() {
                         ${apt.status}
                     </span>
                 </div>
-                <div>
-                   ${apt.status.toLowerCase() === 'completed' && !apt.has_review ? `
-                        <button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${(apt.nurse_name || "the nurse").replace(/'/g, "\\'")}')">Rate Visit</button>
-                   ` : apt.has_review ? `
-                        <span style="color: #10b981; font-weight: 700; font-size: 0.9rem;"><i class="fas fa-star"></i> Rated</span>
-                   ` : ""}
-                </div>
-            </div>
-        `;
+                <div>${actionBtn}</div>
+            </div>`;
     }).join("");
   }
 
