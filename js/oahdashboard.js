@@ -113,12 +113,13 @@ async function initPage() {
                 <button class="btn btn-outline btn-small" onclick="viewInquiryDetails(${inq.booking_id})">
                   View Details
                 </button>
-                ${inq.status === "pending"
-            ? `<button class="btn btn-primary btn-small" style="background: #059669" onclick="updateInquiryStatus(${inq.booking_id}, 'accepted')">
+                ${
+                  inq.status === "pending"
+                    ? `<button class="btn btn-primary btn-small" style="background: #059669" onclick="updateInquiryStatus(${inq.booking_id}, 'accepted')">
                     Accept
                    </button>`
-            : `<button class="btn btn-outline btn-small" disabled>Accepted</button>`
-          }
+                    : `<button class="btn btn-outline btn-small" disabled>Accepted</button>`
+                }
               </div>
             `;
         container.appendChild(card);
@@ -171,13 +172,15 @@ function viewInquiryDetails(id) {
   if (!inq) return;
   const applicant = inq.applicant || {};
 
-  alert(`
-         Inquiry Details:
-         Resident: ${inq.resident_name}
-         Age: ${inq.resident_age}
-         Applicant: ${applicant.name} (${inq.relation})
-         Contact: ${applicant.phone} | ${applicant.email}
-         Needs: ${inq.medical_needs}
-         Requests: ${inq.special_requests}
-       `);
+  if (applicant) {
+    alert(`
+      inquiry Details:
+      Resident:${applicant.name},
+      age:${resident_age},
+      Applicant :${resident_name},
+      contact : ${applicant.contact}|(${inq.relation}),
+      needs :${inq.medical_needs},
+      Request : ${inq.special_requests},
+    `);
+  }
 }

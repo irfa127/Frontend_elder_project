@@ -15,10 +15,10 @@ async function initPage() {
     avatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name)}&background=3b82f6&color=fff`;
   }
 
-  // Initial load
+
   await refreshDashboard();
 
-  // Auto-refresh every 1 minute
+ 
   setInterval(refreshDashboard, 60000);
 }
 
@@ -36,7 +36,7 @@ async function refreshDashboard() {
         },
       },
     );
-    if (userRes.ok) {
+    if (userRes.status == 200) {
       const userData = await userRes.json();
 
       const ratingEl = document.getElementById("nurse-rating-value");
