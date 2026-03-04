@@ -9,14 +9,13 @@ document.querySelectorAll(".role-option").forEach((m) => {
 });
 
 const form = document.getElementById("signupForm");
+
 form.addEventListener("submit", async (a) => {
   a.preventDefault();
-
   const errorDiv = document.getElementById("errorMessage");
   const successDiv = document.getElementById("successMessage");
   errorDiv.style.display = "none";
   successDiv.style.display = "none";
-
   const userData = {
     email: document.getElementById("email").value.trim(),
     username: document.getElementById("username").value.trim(),
