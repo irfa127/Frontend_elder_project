@@ -1,6 +1,6 @@
 const API_URL = "https://elder-backend-a7db.vercel.app";
-let isRequestInProgress = false; // every 5 second dashboard refresh aagum
-let currentUser = null; // Global variable to store logged-in user
+let isRequestInProgress = false;
+let currentUser = null;
 
 initPage();
 
@@ -82,7 +82,7 @@ async function refreshDashboard(userId) {
   isRequestInProgress = true;
 
   try {
-    console.log("Fetching appointments for patient:", userId);
+    // ── 1. Appointments (for Recent Visits only) ──────────────────────
     const aptResponse = await fetch(
       `${API_URL}/appointments/patient/${userId}?t=${new Date().getTime()}`,
       {
@@ -91,16 +91,12 @@ async function refreshDashboard(userId) {
         },
       },
     );
+
     if (aptResponse.ok) {
       const appointments = await aptResponse.json();
       allAppointments = appointments;
 
-      const activeStatuses = ["pending", "confirmed", "on-the-way", "arrived"];
-      const activeApts = appointments.filter((a) =>
-        activeStatuses.includes(a.status.toLowerCase()),
-      );
-
-      // Display Recent Visits (Completed)
+      // Show completed appointments in Recent Visits
       const completedApts = appointments
         .filter(a => a.status.toLowerCase() === "completed")
         .sort((a, b) => new Date(b.appointment_date) - new Date(a.appointment_date));
@@ -120,7 +116,7 @@ async function refreshDashboard(userId) {
                 <p style="font-size: 0.75rem; color: var(--text-muted)">${new Date(apt.appointment_date).toLocaleDateString()} • ${apt.service_type || "General Care"}</p>
               </div>
               ${!apt.has_review ? `
-                <button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${(apt.nurse_name || "the nurse").replace(/'/g, "\\'")}')" style="padding: 5px 10px; font-size: 0.7rem;">Rate</button>
+                <button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${(apt.nurse_name || "the nurse").replace(/'/g, "\\'")}')  " style="padding: 5px 10px; font-size: 0.7rem;">Rate</button>
               ` : `
                 <span style="font-size: 0.7rem; color: #10b981; font-weight: 700;"><i class="fas fa-star"></i> Rated</span>
               `}
@@ -128,82 +124,9 @@ async function refreshDashboard(userId) {
           `).join("");
         }
       }
-
-      activeApts.sort((a, b) => {
-        const priority = {
-          arrived: 4,
-          "on-the-way": 3,
-          confirmed: 2,
-          pending: 1,
-        };
-
-        const statusA = a.status.toLowerCase();
-        const statusB = b.status.toLowerCase();
-
-        if (priority[statusB] !== priority[statusA]) {
-          return priority[statusB] - priority[statusA];
-        }
-
-        return b.id - a.id;
-      });
-
-      const activeApt = activeApts.length > 0 ? activeApts[0] : null;
-
-      const warningEl = document.getElementById("nurseBusyWarning");
-      const trackingEl = document.getElementById("liveTrackingContainer");
-
-      if (warningEl) warningEl.style.display = "none";
-
-      if (activeApt) {
-        if (trackingEl) {
-          trackingEl.style.display = "block";
-          updateTimeline(activeApt.status.toLowerCase());
-        }
-
-        if (
-          activeApt.status.toLowerCase() === "pending" ||
-          activeApt.status.toLowerCase() === "confirmed"
-        ) {
-          (async () => {
-            try {
-              const nurseApptsRes = await fetch(
-                `${API_URL}/appointments/nurse/${activeApt.nurse_id}`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
-                },
-              );
-              if (nurseApptsRes.ok) {
-                const nurseAppts = await nurseApptsRes.json();
-                const isBusy = nurseAppts.some((apt) => {
-                  if (apt.id === activeApt.id) return false;
-                  const isActive = ["ON_THE_WAY", "ARRIVED"].includes(
-                    apt.status.toUpperCase(),
-                  );
-                  if (!isActive) return false;
-                  return (
-                    new Date(apt.appointment_date).toDateString() ===
-                    new Date(activeApt.appointment_date).toDateString() &&
-                    apt.appointment_time === activeApt.appointment_time
-                  );
-                });
-                if (isBusy && warningEl) warningEl.style.display = "block";
-              }
-            } catch (e) {
-              console.error("Error checking nurse availability", e);
-            }
-          })();
-        }
-      } else {
-        if (trackingEl) trackingEl.style.display = "none";
-        const noAptMsg = document.querySelector(".page-title + p");
-        if (noAptMsg)
-          noAptMsg.innerText = "You have no active appointments right now.";
-      }
     }
 
-    // Fetch Vitals
+    // ── 2. Vitals ─────────────────────────────────────────────────────
     const vitalsResponse = await fetch(`${API_URL}/vitals/patient/${userId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -222,146 +145,71 @@ async function refreshDashboard(userId) {
           `${latest.sugar_level || "--"} <small style="font-size: 1rem">mg/dL</small>`;
 
         document.getElementById("reportsList").innerHTML = `
-                      <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
-                        <i class="fas fa-file-medical-alt" style="color: var(--primary); font-size: 1.5rem"></i>
-                        <div>
-                          <p style="font-weight: 700; font-size: 0.9rem">Health Summary</p>
-                          <p style="font-size: 0.75rem; color: var(--text-muted)">Latest reading recorded</p>
-                        </div>
-                      </li>
-                 `;
+          <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+            <i class="fas fa-file-medical-alt" style="color: var(--primary); font-size: 1.5rem"></i>
+            <div>
+              <p style="font-weight: 700; font-size: 0.9rem">Health Summary</p>
+              <p style="font-size: 0.75rem; color: var(--text-muted)">Latest reading recorded</p>
+            </div>
+          </li>
+        `;
       }
     }
 
-    // Fetch Inquiries (For OAH Notification)
+    // ── 3. OAH Notice: Only show if an inquiry is accepted ───────────
+    const oahContainer = document.getElementById("oahNoticeContainer");
+    if (oahContainer) {
+      oahContainer.innerHTML = ""; // clear before re-checking
+    }
+
     const inqResponse = await fetch(`${API_URL}/inquiries/patient/${userId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
+
     if (inqResponse.ok) {
       const inquiries = await inqResponse.json();
       const acceptedInq = inquiries.find((i) => i.status === "accepted");
 
-      if (acceptedInq) {
+      if (acceptedInq && oahContainer) {
         const comm = acceptedInq.old_age_home || {};
         const applicant = acceptedInq.applicant || {};
-        const applicantName =
-          applicant.name || currentUser.full_name || "Applicant";
-        // SECURITY: Do not show patient email. Show Organization email instead.
+        const applicantName = applicant.name || currentUser.full_name || "Applicant";
         const oahEmail = comm.email || "N/A";
 
-        // Remove existing notice if present
-        const existingNotice = document.getElementById("oahNoticeContainer");
-        if (existingNotice) {
-          existingNotice.remove();
-        }
-
-        const section = document.createElement("div");
-        section.id = "oahNoticeContainer";
-        section.className = "animate-slide";
-        section.style.marginTop = "30px";
-        section.innerHTML = `
-                    <div class="glass-card" style="background: #ecfdf5; border-color: #a7f3d0; display: flex; gap: 20px; align-items: center;">
-                       <img src="${comm.image_url || "https://via.placeholder.com/100"}" 
-                            style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover;" />
-                       <div style="flex: 1;">
-                          <h3 style="color: #065f46; font-weight: 800; margin-bottom: 5px;">
-                             <i class="fas fa-check-circle"></i> Your Old Age Home booking was successful!
-                          </h3>
-                          <p style="color: #047857; font-size: 0.95rem;">
-                             <strong>${comm.name || "Community"}</strong> has accepted your request. They will contact you shortly.
-                          </p>
-                          <p style="margin-top: 5px; color: #047857; font-size: 0.9rem;">
-                             <strong>Applicant:</strong> ${applicantName}
-                          </p>
-                          <p style="margin-top: 3px; color: #047857; font-size: 0.9rem;">
-                             <i class="fas fa-envelope"></i> <strong>OAH Email:</strong> ${oahEmail}
-                          </p>
-                          <p style="margin-top: 3px; color: #047857; font-size: 0.9rem;">
-                             <i class="fas fa-phone-alt"></i> ${comm.phone || "Contact Admin"}
-                          </p>
-                       </div>
-                    </div>
-                 `;
-
-        // Try multiple insertion points
-        let inserted = false;
-
-        // Try inserting after liveTrackingContainer
-        const tracker = document.getElementById("liveTrackingContainer");
-        if (tracker && tracker.parentNode) {
-          tracker.parentNode.insertBefore(section, tracker.nextSibling);
-          inserted = true;
-        }
-
-        // If that fails, try inserting at the beginning of main content
-        if (!inserted) {
-          const mainContent = document.querySelector(".main-content");
-          if (mainContent) {
-            mainContent.insertBefore(section, mainContent.firstChild);
-            inserted = true;
-          }
-        }
-
-        // If still not inserted, append to body
-        if (!inserted) {
-          document.body.appendChild(section);
-        }
+        oahContainer.style.marginBottom = "0";
+        oahContainer.innerHTML = `
+          <div class="glass-card animate-slide" style="background: #ecfdf5; border-color: #a7f3d0; display: flex; gap: 20px; align-items: center; margin-bottom: 0;">
+            <img src="${comm.image_url || "https://via.placeholder.com/100"}" 
+                 style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover; flex-shrink: 0;" />
+            <div style="flex: 1;">
+              <h3 style="color: #065f46; font-weight: 800; margin-bottom: 5px;">
+                <i class="fas fa-check-circle"></i> Your Old Age Home booking was successful!
+              </h3>
+              <p style="color: #047857; font-size: 0.95rem;">
+                <strong>${comm.name || "Community"}</strong> has accepted your request. They will contact you shortly.
+              </p>
+              <p style="margin-top: 5px; color: #047857; font-size: 0.9rem;">
+                <strong>Applicant:</strong> ${applicantName}
+              </p>
+              <p style="margin-top: 3px; color: #047857; font-size: 0.9rem;">
+                <i class="fas fa-envelope"></i> <strong>OAH Email:</strong> ${oahEmail}
+              </p>
+              <p style="margin-top: 3px; color: #047857; font-size: 0.9rem;">
+                <i class="fas fa-phone-alt"></i> ${comm.phone || "Contact Admin"}
+              </p>
+            </div>
+          </div>
+        `;
       }
+      // If no accepted inquiry, oahContainer remains empty — nothing is shown
     }
+
   } catch (e) {
     console.error("Auto-refresh error:", e);
   } finally {
     isRequestInProgress = false;
-  }
-}
-
-function updateTimeline(status) {
-  const map = {
-    pending: 0,
-    confirmed: 10,
-    "on-the-way": 40,
-    arrived: 75,
-    completed: 100,
-  };
-  const percent = map[status] || 0;
-
-  // Update Progress Bar
-  const bar = document.getElementById("progress-bar");
-  if (bar) bar.style.width = percent + "%";
-
-  // Reset Icons
-  ["icon-way", "icon-arrived", "icon-completed"].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove("active", "completed");
-  });
-
-  // Update Text & Icons
-  const statusText = document.getElementById("status-text");
-  const etaText = document.getElementById("txt-eta");
-
-  if (status === "on-the-way") {
-    document.getElementById("icon-way").classList.add("active");
-    statusText.innerText = "Nurse is on the way";
-    etaText.innerText = "ETA: 10 Mins";
-  } else if (status === "arrived") {
-    document.getElementById("icon-way").classList.add("completed");
-    document.getElementById("icon-arrived").classList.add("active");
-    statusText.innerText = "Nurse has arrived!";
-    etaText.innerText = "Arrived";
-  } else if (status === "completed") {
-    document.getElementById("icon-way").classList.add("completed");
-    document.getElementById("icon-arrived").classList.add("completed");
-    document.getElementById("icon-completed").classList.add("completed");
-    statusText.innerText = "Visit Completed";
-    etaText.innerText = "Completed";
-  } else if (status === "confirmed") {
-    statusText.innerText = "Appointment Confirmed";
-    etaText.innerText = "Scheduled";
-  } else {
-    statusText.innerText = "Waiting for confirmation...";
-    etaText.innerText = "Pending";
   }
 }
 

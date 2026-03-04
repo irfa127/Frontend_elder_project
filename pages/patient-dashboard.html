@@ -46,8 +46,8 @@
         </button>
         <div>
           <h1 class="page-title" id="user-greeting">Hello, Patient <i class="fas fa-hand-peace"></i></h1>
-          <p style="color: var(--text-muted); margin-top: 5px">
-            You have one appointment scheduled for today.
+          <p id="dash-subtitle" style="color: var(--text-muted); margin-top: 5px">
+            Welcome to your ElderConnect dashboard.
           </p>
         </div>
 
@@ -63,99 +63,8 @@
         </div>
       </header>
 
-      <div id="liveTrackingContainer" class="tracking-container animate-slide" style="display: none"
-        data-aos="fade-down">
-        <div class="tracking-title">
-          <span class="badge badge-success" style="padding: 5px 10px">LIVE</span>
-          Nurse Arrival Tracking
-          <span id="txt-eta" style="
-                margin-left: auto;
-                color: var(--primary);
-                font-size: 0.9rem;
-              ">Estimated: 15 mins</span>
-        </div>
-
-        <div class="timeline">
-          <div class="timeline-line">
-            <div class="line-progress" id="progress-bar"></div>
-          </div>
-
-          <div class="timeline-step">
-            <div class="step-icon completed">
-              <i class="fas fa-calendar-check"></i>
-            </div>
-            <div class="step-label">Booked</div>
-          </div>
-
-          <div class="timeline-step">
-            <div class="step-icon" id="icon-way">
-              <i class="fas fa-car-side"></i>
-            </div>
-            <div class="step-label">On Way</div>
-          </div>
-
-          <div class="timeline-step">
-            <div class="step-icon" id="icon-arrived">
-              <i class="fas fa-map-marker-alt"></i>
-            </div>
-            <div class="step-label">Arrived</div>
-          </div>
-
-          <div class="timeline-step">
-            <div class="step-icon" id="icon-completed">
-              <i class="fas fa-file-medical"></i>
-            </div>
-            <div class="step-label">Complete</div>
-          </div>
-        </div>
-
-        <div style="margin-top: 30px; text-align: center">
-          <h3 id="status-text" style="font-size: 1.1rem; font-weight: 800; color: #1e293b">
-            Nurse is preparing...
-          </h3>
-          <p style="color: #64748b; font-size: 0.9rem; margin-top: 5px">
-            Dr. Alice Smith •
-            <a href="#" style="color: var(--primary)">Contact</a>
-          </p>
-        </div>
-      </div>
-
-      <div id="nurseBusyWarning" class="animate-slide" style="display: none; margin-top: 20px" data-aos="fade-in">
-        <div class="glass-card" style="
-              background: #fff1f2;
-              border-color: #fda4af;
-              display: flex;
-              gap: 15px;
-              align-items: start;
-            ">
-          <div style="
-                background: #fee2e2;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-              ">
-            <i class="fas fa-user-clock" style="color: #be123c; font-size: 1.2rem"></i>
-          </div>
-          <div>
-            <h3 style="
-                  color: #be123c;
-                  font-weight: 800;
-                  font-size: 1rem;
-                  margin-bottom: 5px;
-                ">
-              Nurse Currently Busy
-            </h3>
-            <p style="color: #9f1239; font-size: 0.9rem; line-height: 1.5">
-              Your nurse is currently attending another patient at this
-              scheduled time. Please wait, they will update their status soon.
-            </p>
-          </div>
-        </div>
-      </div>
+      <!-- OAH Notice: Only shown when an Old Age Home booking is accepted -->
+      <div id="oahNoticeContainer"></div>
 
       <div class="stats-grid" style="margin-top: 30px">
         <div class="stat-card" data-aos="zoom-in" data-aos-delay="100">
