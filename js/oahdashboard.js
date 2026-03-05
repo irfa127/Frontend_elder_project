@@ -45,7 +45,10 @@ async function initPage() {
 
     const priceStr = community.pricing || "0";
     const price = parseInt(priceStr.replace(/[^0-9]/g, "")) || 0;
+
+
     // Inquiries fetch pannrom
+
     const inqResponse = await fetch(
       `${API_URL}/inquiries/community/${community.id}`,
       {
@@ -97,7 +100,6 @@ async function initPage() {
         const card = document.createElement("div");
         card.className = "inquiry-card";
         const applicant = inq.applicant || {};
-
         card.innerHTML = `
               <div class="resident-info">
                 <h4>${inq.resident_name || applicant.name} <span style="font-size:0.8em; font-weight:normal; color:#666;">(Age: ${inq.resident_age || "N/A"})</span></h4>
@@ -127,6 +129,7 @@ async function initPage() {
     }
 
     window.currentInquiries = inquiries;
+    
   } catch (e) {
     console.error("Dashboard error:", e);
     const errorMsg = e.message || "Unknown error";

@@ -19,9 +19,9 @@ async function initPage() {
   await fetchAppointments();
 
   // Auto refresh every 1 minute
-  setInterval(() => {
-    fetchAppointments();
-  }, 60000);
+  // setInterval(() => {
+  //   fetchAppointments();
+  // }, 60000);
 }
 
 async function fetchAppointments() {
@@ -49,71 +49,105 @@ async function fetchAppointments() {
     const appointments = await response.json();
     container.innerHTML = "";
 
-    if (appointments.length === 0) {
+    const seenIds = new Set();
+    // Sort by updated_at or id descending to get newest first if possible?
+    // For now, let's just reverse to show latest if duplicated.
+    const uniqueAppointments = appointments.reverse().filter(apt => {
+      if (seenIds.has(apt.id)) return false;
+      seenIds.add(apt.id);
+      return true;
+    }).reverse();
+
+    if (uniqueAppointments.length === 0) {
       container.innerHTML =
         "<p style='text-align:center; padding: 20px;'>No pending appointments found.</p>";
       return;
     }
 
-    appointments.forEach((apt) => {
+    uniqueAppointments.forEach((apt) => {
       const date = new Date(apt.appointment_date).toLocaleDateString();
       const time = apt.appointment_time;
-      const statusClass = apt.status === "COMPLETED" ? "success" : "info";
-      const displayStatus = apt.status.replace(/-/g, " ").toUpperCase();
+      const curStatus = (apt.status || "").trim().toUpperCase();
+      const displayStatus = curStatus.replace(/-/g, " ");
+
+      // Task Extension: Booking Status UI Colors
+      let statusClass = "info";
+      let statusStyle = "";
+
+      if (curStatus === "PENDING") statusClass = "warning";
+      else if (curStatus === "ACCEPTED") statusClass = "primary";
+      else if (curStatus === "ON_THE_WAY") { statusClass = "info"; statusStyle = "background: #8b5cf6;"; } // Purple
+      else if (curStatus === "ARRIVED") { statusClass = "info"; statusStyle = "background: #14b8a6;"; } // Teal
+      else if (curStatus === "COMPLETED") statusClass = "success";
+      else if (curStatus === "REJECTED" || curStatus === "CANCELLED") statusClass = "danger";
 
       // Strict Step-by-Step Logic & Time Validation
-      const apptDatePart = apt.appointment_date.split('T')[0];
-      const [h, m] = apt.appointment_time.split(':');
-      const apptDateTime = new Date(`${apptDatePart}T${h.padStart(2, '0')}:${m.padStart(2, '0')}:00`);
+      const apptDatePart = apt.appointment_date.split("T")[0];
+      const [h, m] = apt.appointment_time.split(":");
+      const apptDateTime = new Date(
+        `${apptDatePart}T${h.padStart(2, "0")}:${m.padStart(2, "0")}:00`,
+      );
       const now = new Date();
       const isTimeReached = now >= apptDateTime;
 
-      const isPending = apt.status === "PENDING";
-      const isOnWay = apt.status === "ON_THE_WAY";
-      const isArrived = apt.status === "ARRIVED";
-      const isCompleted = apt.status === "COMPLETED";
+      const isPending = curStatus === "PENDING";
+      const isAccepted = curStatus === "ACCEPTED";
+      const isOnWay = curStatus === "ON_THE_WAY";
+      const isArrived = curStatus === "ARRIVED";
+      const isCompleted = curStatus === "COMPLETED";
+      const isRejected = curStatus === "REJECTED" || curStatus === "CANCELLED";
 
       let statusButtons = `
         <div class="status-timeline" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 12px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
       `;
 
-      // 1. On Way Button Logic
-      if (isPending || isOnWay || isArrived || isCompleted) {
-        statusButtons += `
-          <button class="btn-step ${isOnWay || isArrived || isCompleted ? "completed" : ""}" 
-                  ${!isPending ? "disabled" : ""} 
-                  onclick="updateStatus(${apt.id}, 'ON_THE_WAY')">
-            <i class="fas fa-car-side"></i> On Way
-          </button>
-        `;
-      }
+      if (isRejected) {
+        statusButtons += `<span style="color: #ef4444; font-weight: 800; text-transform: uppercase;"><i class="fas fa-times-circle"></i> Rejected</span>`;
+      } else {
+        // Task Extension: Nurse Accept and Reject Buttons
+        if (isPending) {
+          statusButtons += `
+            <button class="btn-step" style="background: #3b82f6; border-color: #3b82f6; width: auto; padding: 8px 15px;" onclick="updateStatus(this, ${apt.id}, 'ACCEPTED')">
+              <i class="fas fa-check"></i> Accept
+            </button>
+            <button class="btn-step" style="background: #ef4444; border-color: #ef4444; width: auto; padding: 8px 15px;" onclick="updateStatus(this, ${apt.id}, 'CANCELLED')">
+              <i class="fas fa-times"></i> Reject
+            </button>
+          `;
+        }
 
-      // 2. Arrived Button Logic
-      if (isOnWay || isArrived || isCompleted) {
-        statusButtons += `
-          <button class="btn-step ${isArrived || isCompleted ? "completed" : ""}" 
-                  ${!isOnWay ? "disabled" : ""} 
-                  onclick="updateStatus(${apt.id}, 'ARRIVED')">
-            <i class="fas fa-map-pin"></i> Arrived
-          </button>
-        `;
-      }
+        // 1. On Way Button Logic
+        if (isAccepted || isOnWay || isArrived || isCompleted) {
+          statusButtons += `
+            <button class="btn-step ${isOnWay || isArrived || isCompleted ? "completed" : ""}" 
+                    ${!isAccepted ? "disabled" : ""} 
+                    onclick="updateStatus(this, ${apt.id}, 'ON_THE_WAY')">
+              <i class="fas fa-car-side"></i> On Way
+            </button>
+          `;
+        }
 
-      // 3. Complete Button Logic
-      if (isCompleted || (isArrived && isTimeReached)) {
-        statusButtons += `
-          <button class="btn-step ${isCompleted ? "completed" : ""}" 
-                  ${isCompleted ? "disabled" : ""} 
-                  onclick="openUploadModal('${apt.id}', 'Patient #${apt.patient_id}')">
-            <i class="fas fa-check-circle"></i> Complete
-          </button>
-        `;
-      } else if (isArrived && !isTimeReached) {
-        statusButtons += `
-          <div style="font-size: 0.8rem; color: #f59e0b; padding: 10px; border: 1px dashed #f59e0b; border-radius: 8px; display: flex; align-items: center; gap: 5px;">
-            <i class="fas fa-clock"></i> Completion available at ${apt.appointment_time}
-          </div>
-        `;
+        // 2. Arrived Button Logic
+        if (isOnWay || isArrived || isCompleted) {
+          statusButtons += `
+            <button class="btn-step ${isArrived || isCompleted ? "completed" : ""}" 
+                    ${!isOnWay ? "disabled" : ""} 
+                    onclick="updateStatus(this, ${apt.id}, 'ARRIVED')">
+              <i class="fas fa-map-pin"></i> Arrived
+            </button>
+          `;
+        }
+
+        // 3. Complete Button Logic
+        if (isArrived || isCompleted) {
+          statusButtons += `
+            <button class="btn-step ${isCompleted ? "completed" : ""}" 
+                    ${isCompleted ? "disabled" : ""} 
+                    onclick="openUploadModal(this, '${apt.id}', 'Patient #${apt.patient_id}')">
+              <i class="fas fa-check-circle"></i> ${isCompleted ? "Completed" : "Complete Visit"}
+            </button>
+          `;
+        }
       }
 
       statusButtons += `</div>`;
@@ -139,7 +173,7 @@ async function fetchAppointments() {
                     </div>
                   </div>
                 </div>
-                <span class="badge badge-${statusClass}">${displayStatus}</span>
+                <span class="badge badge-${statusClass}" style="${statusStyle}">${displayStatus}</span>
               </div>
 
               <div style="display: flex; gap: 30px; margin-bottom: 30px; flex-wrap: wrap;">
@@ -174,7 +208,8 @@ async function fetchAppointments() {
   }
 }
 
-async function updateStatus(id, newStatus) {
+async function updateStatus(btn, id, newStatus) {
+  if (btn) btn.disabled = true;
   try {
     const response = await fetch(`${API_URL}/appointments/${id}`, {
       method: "PUT",
@@ -189,14 +224,20 @@ async function updateStatus(id, newStatus) {
       fetchAppointments();
     } else {
       const err = await response.json();
-      showToast(err.detail || "Update failed", "error");
+      const msg = typeof getErrorMessage !== "undefined"
+        ? getErrorMessage(err.detail)
+        : (err.detail || "Update failed");
+      showToast(msg, "error");
     }
   } catch (e) {
-    showToast("Connection error");
+    showToast("Connection error", "error");
+    if (btn) btn.disabled = false;
   }
 }
 
-function openUploadModal(id, name) {
+let lastTriggerBtn = null;
+function openUploadModal(btn, id, name) {
+  lastTriggerBtn = btn;
   document.getElementById("targetPatientName").innerText = name;
   document.getElementById("targetAppointmentId").value = id;
 
@@ -256,11 +297,14 @@ async function finalizeUpload() {
     });
 
     if (response.ok) {
+      if (lastTriggerBtn) lastTriggerBtn.disabled = true;
       showToast("Health data uploaded & Visit Complete!");
       closeModal("uploadModal");
       fetchAppointments();
     } else {
-      showToast("Failed to complete appointment");
+      const err = await response.json();
+      const msg = typeof getErrorMessage !== "undefined" ? getErrorMessage(err.detail) : (err.detail || "Failed to complete appointment");
+      showToast(msg, "error");
     }
   } catch (e) {
     console.error(e);

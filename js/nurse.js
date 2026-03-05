@@ -14,7 +14,7 @@ async function initPage() {
     window.location.href = "login.html";
     return;
   }
-
+// apoinment chages function updated booking
   window.updateStatus = async (id, newStatus) => {
     if (typeof id === 'string') return;
 
@@ -50,7 +50,7 @@ async function initPage() {
       alert("Connection error. Please check if backend is running.");
     }
   };
-
+// complete button 
   const uploadForm = document.getElementById("uploadForm");
   if (uploadForm) {
     uploadForm.addEventListener("submit", (e) => {
@@ -64,7 +64,7 @@ async function initPage() {
     });
   }
 }
-
+// dashboard data load funcion morning pakkanum 
 async function loadNurseDashboard(user) {
   try {
     const response = await fetch(`https://elder-backend-a7db.vercel.app/appointments/nurse/${user.id}`, {
