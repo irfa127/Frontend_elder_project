@@ -6,6 +6,7 @@ initPage();
 
 async function initPage() {
   const userStr = localStorage.getItem("user");
+  console.log(userStr)
   if (!userStr) {
     window.location.href = "login.html";
     return;
@@ -39,18 +40,7 @@ async function initPage() {
   refreshDashboard(currentUser.id);
 
   setInterval(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) {
-      window.location.href = "login.html";
-      return;
-    }
-    const parsed = JSON.parse(storedUser);
-    if (parsed.id !== currentUser.id) {
-      console.warn("Session changed, reloading...");
-      window.location.reload();
-      return;
-    }
-    refreshDashboard(currentUser.id);
+    if (currentUser) refreshDashboard(currentUser.id);
   }, 5000);
 
   // Star rating events
@@ -96,41 +86,30 @@ async function refreshDashboard(userId) {
       const appointments = await aptResponse.json();
       allAppointments = appointments;
 
-      // Show completed appointments in Recent Visits
-      const completedApts = appointments
-        .filter(a => (a.status || "").trim().toUpperCase() === "COMPLETED")
+      // Show all appointments in Recent Appointments
+      const recentApts = appointments
         .sort((a, b) => new Date(b.appointment_date) - new Date(a.appointment_date));
 
       const visitList = document.getElementById("recentVisitsList");
       if (visitList) {
-        if (completedApts.length === 0) {
+        if (recentApts.length === 0) {
           visitList.innerHTML = `<li style="text-align: center; color: var(--text-muted)">No recent visits found.</li>`;
         } else {
-          visitList.innerHTML = completedApts.map(apt => {
+          visitList.innerHTML = recentApts.map(apt => {
             const nurseName = (apt.nurse_name || "Nurse Visit").replace(/'/g, "&#39;");
-            const isRated = apt.has_review;
-
-            // Clickable row opens review form if not yet rated
-            const clickAttr = !isRated
-              ? `onclick="openReviewModal(${apt.id}, '${nurseName}')" style="cursor: pointer;"`
-              : `style="cursor: default;"`;
-
-            const badge = isRated
-              ? `<span style="font-size: 0.7rem; color: #10b981; font-weight: 700; white-space: nowrap;"><i class="fas fa-star"></i> Rated</span>`
-              : `<span style="font-size: 0.7rem; color: var(--primary); font-weight: 700; white-space: nowrap;"><i class="fas fa-pen"></i> Tap to Rate</span>`;
-
+            const rateBtn = !apt.has_review
+              ? `<button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${nurseName}')" style="padding: 5px 10px; font-size: 0.7rem;">Write Review</button>`
+              : `<span style="font-size: 0.7rem; color: #10b981; font-weight: 700;"><i class="fas fa-star"></i> Reviewed</span>`;
             return `
-            <li ${clickAttr} style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border); border-radius: 10px; padding: 10px; transition: background 0.15s; ${!isRated ? 'hover-bg: #f0fdf4;' : ''}"
-              onmouseenter="${!isRated ? "this.style.background='#f0fdf4'" : ''}"
-              onmouseleave="${!isRated ? "this.style.background=''" : ''}">
+            <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
               <div style="width: 45px; height: 45px; background: #f0fdf4; color: #10b981; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <i class="fas fa-check-circle"></i>
               </div>
-              <div style="flex: 1; min-width: 0;">
+              <div style="flex: 1">
                 <p style="font-weight: 700; font-size: 0.9rem">${apt.nurse_name || "Nurse Visit"}</p>
                 <p style="font-size: 0.75rem; color: var(--text-muted)">${new Date(apt.appointment_date).toLocaleDateString()} • ${apt.service_type || "General Care"}</p>
               </div>
-              ${badge}
+              ${rateBtn}
             </li>`;
           }).join("");
         }
@@ -234,15 +213,18 @@ function openRecordsModal() {
     container.innerHTML = allAppointments.sort((a, b) => b.id - a.id).map(apt => {
       const statusUp = (apt.status || "").trim().toUpperCase();
       let statusColor = "#64748b";
-      if (statusUp === "COMPLETED") statusColor = "#10b981";
-      if (statusUp === "PENDING") statusColor = "#f59e0b";
+      if (statusUp === "PENDING") statusColor = "#f59e0b"; // Orange
+      else if (statusUp === "ACCEPTED") statusColor = "#3b82f6"; // Blue
+      else if (statusUp === "ON_THE_WAY") statusColor = "#8b5cf6"; // Purple
+      else if (statusUp === "ARRIVED") statusColor = "#14b8a6"; // Teal
+      else if (statusUp === "COMPLETED") statusColor = "#10b981"; // Green
+      else if (statusUp === "REJECTED" || statusUp === "CANCELLED") statusColor = "#ef4444"; // Red
+
       const nurseName = (apt.nurse_name || "Nurse visit").replace(/'/g, "&#39;");
 
-      const actionBtn = (statusUp === "COMPLETED" && !apt.has_review)
-        ? `<button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${nurseName}')">Rate Visit</button>`
-        : apt.has_review
-          ? `<span style="color: #10b981; font-weight: 700; font-size: 0.9rem;"><i class="fas fa-star"></i> Rated</span>`
-          : "";
+      const actionBtn = !apt.has_review
+        ? `<button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${nurseName}')">Write Review</button>`
+        : `<span style="color: #10b981; font-weight: 700; font-size: 0.9rem;"><i class="fas fa-star"></i> Reviewed</span>`;
 
       return `
             <div style="background: #f8fafc; border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
@@ -252,8 +234,12 @@ function openRecordsModal() {
                         <i class="far fa-calendar-alt"></i> ${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}
                     </p>
                     <span style="font-size: 0.75rem; font-weight: 700; color: ${statusColor}; text-transform: uppercase;">
-                        ${apt.status}
+                        ${apt.status === "CANCELLED" ? "REJECTED" : apt.status}
                     </span>
+                    ${(statusUp === "REJECTED" || statusUp === "CANCELLED") ? `
+                    <p style="margin-top: 5px; color: #ef4444; font-size: 0.8rem; font-weight: 600;">
+                        <i class="fas fa-info-circle"></i> Your appointment was rejected by the nurse.
+                    </p>` : ""}
                 </div>
                 <div>${actionBtn}</div>
             </div>`;
@@ -301,13 +287,14 @@ async function submitReview() {
     });
 
     if (response.ok) {
-      showToast("Thank you for your rating!");
+      showToast("Thank you for your feedback!");
       closeModal("reviewModal");
       closeModal("recordsModal");
-      refreshDashboard(currentUser.id);
+      if (currentUser) refreshDashboard(currentUser.id);
     } else {
       const err = await response.json();
-      showToast(err.detail || "Failed to submit rating", "error");
+      const msg = typeof getErrorMessage !== "undefined" ? getErrorMessage(err.detail) : (err.detail || "Failed to submit rating");
+      showToast(msg, "error");
     }
   } catch (e) {
     console.error(e);

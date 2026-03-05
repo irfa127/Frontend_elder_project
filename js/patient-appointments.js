@@ -85,18 +85,33 @@ async function fetchMyAppointments(patientId) {
             });
 
             let statusBadge = "";
-            const status = apt.status.toUpperCase();
+            const status = (apt.status || "").trim().toUpperCase();
+            let statusStyle = "";
 
             if (status === "PENDING")
                 statusBadge = '<span class="badge badge-warning">Pending</span>';
+            else if (status === "ACCEPTED")
+                statusBadge = '<span class="badge badge-primary">Accepted</span>';
             else if (status === "COMPLETED")
                 statusBadge = '<span class="badge badge-success">Completed</span>';
             else if (status === "ON_THE_WAY")
-                statusBadge = '<span class="badge badge-info" style="background: #3b82f6"><i class="fas fa-car-side"></i> On Way</span>';
+                statusBadge = '<span class="badge badge-info" style="background: #8b5cf6"><i class="fas fa-car-side"></i> On Way</span>';
             else if (status === "ARRIVED")
-                statusBadge = '<span class="badge badge-info" style="background: #8b5cf6"><i class="fas fa-map-pin"></i> Arrived</span>';
+                statusBadge = '<span class="badge badge-info" style="background: #14b8a6"><i class="fas fa-map-pin"></i> Arrived</span>';
+            else if (status === "REJECTED" || status === "CANCELLED")
+                statusBadge = '<span class="badge badge-danger">Rejected</span>';
             else
                 statusBadge = `<span class="badge badge-info">${status.replace(/_/g, " ")}</span>`;
+
+            // Task Extension: Patient Notification for Rejection
+            let rejectionMessage = "";
+            if (status === "REJECTED" || status === "CANCELLED") {
+                rejectionMessage = `
+                    <div style="margin-top: 10px; padding: 10px; background: #fff1f2; border: 1px solid #fecaca; border-radius: 10px; color: #e11d48; font-size: 0.9rem; font-weight: 600;">
+                        <i class="fas fa-info-circle"></i> Your appointment was rejected by the nurse.
+                    </div>
+                `;
+            }
 
             const card = document.createElement("div");
             card.className = "apt-card-attractive";
@@ -126,6 +141,20 @@ async function fetchMyAppointments(patientId) {
                         <span style="font-weight: 600; color: #334155">${apt.appointment_time}</span>
                     </div>
                 </div>
+                
+                ${!apt.has_review ? `
+                    <div style="margin-bottom: 20px;">
+                        <button class="btn btn-primary" style="width: 100%; border-radius: 12px; font-weight: 700;" onclick="openReviewModal(${apt.id}, '${(apt.nurse_name || "Nurse").replace(/'/g, "\\'")}')">
+                            <i class="fas fa-star"></i> Write Review
+                        </button>
+                    </div>
+                ` : `
+                    <div style="margin-bottom: 20px; text-align: center; background: #f0fdf4; padding: 12px; border-radius: 12px; border: 1px solid #dcfce7;">
+                        <span style="color: #10b981; font-weight: 700; font-size: 0.9rem;"><i class="fas fa-check-circle"></i> Service Reviewed</span>
+                    </div>
+                `}
+                
+                ${rejectionMessage}
                 
                 ${apt.notes ? `
                     <div style="margin-top: 15px; padding: 15px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;">
@@ -238,6 +267,15 @@ async function finalizeBooking() {
         return;
     }
 
+    // Task Extension: Prevent Past Date and Time Booking
+    const now = new Date();
+    const selectedDateTime = new Date(date + "T" + time);
+
+    if (selectedDateTime < now) {
+        if (typeof showToast !== 'undefined') showToast("You cannot book an appointment in the past.", "error");
+        return;
+    }
+
     if (!selectedNurseId) {
         if (typeof showToast !== 'undefined') showToast("Please select a nurse", "error");
         return;
@@ -246,7 +284,7 @@ async function finalizeBooking() {
     const appointmentData = {
         patient_id: user.id,
         nurse_id: selectedNurseId,
-        appointment_date: new Date(date + "T" + time).toISOString(),
+        appointment_date: selectedDateTime.toISOString(),
         appointment_time: time,
         service_type: "General Care",
         notes: "New appointment request",
@@ -269,7 +307,8 @@ async function finalizeBooking() {
             if (typeof refreshUserData !== 'undefined') await refreshUserData(user.id);
         } else {
             const data = await response.json();
-            if (typeof showToast !== 'undefined') showToast(data.detail || "Failed to book appointment", "error");
+            const msg = typeof getErrorMessage !== "undefined" ? getErrorMessage(data.detail) : (data.detail || "Failed to book appointment");
+            if (typeof showToast !== 'undefined') showToast(msg, "error");
         }
     } catch (error) {
         console.error("Error booking appointment:", error);
@@ -284,9 +323,21 @@ let currentRating = 5;
 function handleViewReport(url, appointmentId, hasReview) {
     window.open(url, "_blank");
     if (!hasReview) {
-        currentReviewAppointmentId = appointmentId;
-        openModal("reviewModal");
+        openReviewModal(appointmentId);
     }
+}
+
+function openReviewModal(appointmentId, nurseName = "the nurse") {
+    currentReviewAppointmentId = appointmentId;
+    const nameSpan = document.getElementById("nurseNameRating");
+    if (nameSpan) nameSpan.innerText = `How was your visit with ${nurseName}?`;
+
+    // Reset stars
+    currentRating = 5;
+    updateStars(5);
+
+    document.getElementById("reviewText").value = "";
+    openModal("reviewModal");
 }
 
 function updateStars(value) {
@@ -331,7 +382,8 @@ async function submitReview() {
             await fetchMyAppointments(user.id);
         } else {
             const err = await response.json();
-            if (typeof showToast !== 'undefined') showToast(err.detail || "Failed to submit review", "error");
+            const msg = typeof getErrorMessage !== "undefined" ? getErrorMessage(err.detail) : (err.detail || "Failed to submit review");
+            if (typeof showToast !== 'undefined') showToast(msg, "error");
         }
     } catch (e) {
         console.error(e);

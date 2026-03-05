@@ -23,8 +23,8 @@ form.addEventListener("submit", async (a) => {
     full_name: document.getElementById("fullName").value.trim(),
     password: document.getElementById("password").value,
     role: document.getElementById("role").value,
-    phone: document.getElementById("phone").value.trim() || null,
-    address: document.getElementById("address").value.trim() || null,
+    phone: document.getElementById("phone").value.trim(),
+    address: document.getElementById("address").value.trim(),
   };
 
   // Form Validation
@@ -40,20 +40,21 @@ form.addEventListener("submit", async (a) => {
     errorDiv.style.display = "block";
     return;
   }
-
   if (!userData.email.includes("@") || !userData.email.includes(".")) {
     errorDiv.textContent = "Please enter a valid email address.";
     errorDiv.style.display = "block";
     return;
   }
-
   if (userData.password.length < 6) {
     errorDiv.textContent = "Password must be at least 6 characters long.";
     errorDiv.style.display = "block";
     return;
   }
 
-  if (userData.phone && (userData.phone.length !== 10 || isNaN(userData.phone))) {
+  if (
+    userData.phone &&
+    (userData.phone.length !== 10 || isNaN(userData.phone))
+  ) {
     errorDiv.textContent = "Please enter a valid 10-digit phone number.";
     errorDiv.style.display = "block";
     return;
@@ -68,8 +69,11 @@ form.addEventListener("submit", async (a) => {
       body: JSON.stringify(userData),
     });
     const data = await response.json();
+    
+    console.log(response)
+    // console.log(data)
 
-    if (response.ok) {
+    if (response.status == 200) {
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("user", JSON.stringify(data.user));
 

@@ -120,7 +120,12 @@ async function refreshDashboard() {
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px;">
               <i class="far fa-clock"></i> ${next.appointment_time} • ${next.service_type || "General Care"}
             </p>
-            <span class="badge badge-warning" style="text-transform: uppercase;">${next.status.replace(/_/g, " ")}</span>
+            <span class="badge ${(next.status || "").trim().toUpperCase() === 'PENDING' ? 'badge-warning' :
+          (next.status || "").trim().toUpperCase() === 'ACCEPTED' ? 'badge-primary' :
+            (next.status || "").trim().toUpperCase() === 'ON_THE_WAY' ? 'badge-info" style="background: #8b5cf6;' :
+              (next.status || "").trim().toUpperCase() === 'ARRIVED' ? 'badge-info" style="background: #14b8a6;' :
+                ((next.status || "").trim().toUpperCase() === 'REJECTED' || (next.status || "").trim().toUpperCase() === 'CANCELLED') ? 'badge-danger' :
+                  'badge-success'}" style="text-transform: uppercase;">${(next.status || "").trim().toUpperCase() === "CANCELLED" ? "REJECTED" : next.status.replace(/_/g, " ")}</span>
           </div>
           <div style="margin-left: auto;">
             <a href="nurse-portal.html" class="btn btn-primary btn-small">View All</a>
@@ -190,6 +195,7 @@ async function loadNurseReviews(nurseId) {
 
     // Fetch nurse user data to get overall rating
     let overallRating = null;
+
     try {
       const uRes = await fetch(`${API_URL}/users/${nurseId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
@@ -232,14 +238,14 @@ async function loadNurseReviews(nurseId) {
 }
 
 // User role check
-setInterval(() => {
-  const storedUser = localStorage.getItem("user");
-  if (!storedUser) {
-    window.location.href = "login.html";
-    return;
-  }
-  const parsed = JSON.parse(storedUser);
-  if (parsed.role !== "nurse") {
-    window.location.reload();
-  }
-}, 5000);
+// setInterval(() => {
+//   const storedUser = localStorage.getItem("user");
+//   if (!storedUser) {
+//     window.location.href = "login.html";
+//     return;
+//   }
+//   const parsed = JSON.parse(storedUser);
+//   if (parsed.role !== "nurse") {
+//     window.location.reload();
+//   }
+// }, 5000);
