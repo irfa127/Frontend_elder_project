@@ -16,7 +16,7 @@ async function initPage() {
   console.log("Parsed user:", user);
 
   try {
-    const response = await fetch(`https://elder-backend-a7db.vercel.app/vitals/patient/${user.id}`, {
+    const response = await fetch(`http://127.0.0.1:8000/vitals/patient/${user.id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },

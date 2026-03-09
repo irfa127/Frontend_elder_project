@@ -14,18 +14,18 @@ async function initPage() {
     window.location.href = "login.html";
     return;
   }
-// apoinment chages function updated booking
-  window.updateStatus = async (id, newStatus) => {
-    if (typeof id === 'string') return;
+  // apoinment chages function updated booking
 
-    if (!confirm(`Update status to ${newStatus}?`)) return;
+  window.updateStatus = async (id, newStatus) => {
+    if (typeof id === "string") return;
+
 
     try {
-      const response = await fetch(`https://elder-backend-a7db.vercel.app/appointments/${id}`, {
+      const response = await fetch(`http://127.0.0.1:8000/appointments/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ status: newStatus }),
       });
@@ -35,12 +35,17 @@ async function initPage() {
         location.reload();
       } else {
         const err = await response.json();
-        const errorMsg = typeof getErrorMessage !== "undefined"
-          ? getErrorMessage(err.detail)
-          : (typeof err.detail === "object" ? JSON.stringify(err.detail) : err.detail);
+        const errorMsg =
+          typeof getErrorMessage !== "undefined"
+            ? getErrorMessage(err.detail)
+            : typeof err.detail === "object"
+              ? JSON.stringify(err.detail)
+              : err.detail;
 
         if (response.status === 400 && errorMsg.includes("already attending")) {
-          console.warn("Update blocked: This nurse is already attending another patient.");
+          console.warn(
+            "Update blocked: This nurse is already attending another patient.",
+          );
         } else {
           alert("Failed to update status: " + (errorMsg || "Server Error"));
         }
@@ -50,61 +55,68 @@ async function initPage() {
       alert("Connection error. Please check if backend is running.");
     }
   };
-// complete button 
+  // complete button
   const uploadForm = document.getElementById("uploadForm");
   if (uploadForm) {
     uploadForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      if (typeof showToast !== 'undefined') {
-        showToast("Health results successfully uploaded and shared with the patient dashboard! <i class='fas fa-check-circle'></i>");
+      if (typeof showToast !== "undefined") {
+        showToast(
+          "Health results successfully uploaded and shared with the patient dashboard! <i class='fas fa-check-circle'></i>",
+        );
       } else {
-        alert("Health results successfully uploaded and shared with the patient dashboard!");
+        alert(
+          "Health results successfully uploaded and shared with the patient dashboard!",
+        );
       }
       uploadForm.reset();
     });
   }
 }
-// dashboard data load funcion morning pakkanum 
+// dashboard data load function
 async function loadNurseDashboard(user) {
   try {
-    const response = await fetch(`https://elder-backend-a7db.vercel.app/appointments/nurse/${user.id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
-    });
+    const response = await fetch(
+      `http://127.0.0.1:8000/appointments/nurse/${user.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      },
+    );
     if (!response.ok) throw new Error("Failed to fetch dashboard data");
 
     const appointments = await response.json();
 
-
-    const normalized = appointments.map(a => ({
+    const normalized = appointments.map((a) => ({
       ...a,
-      status: a.status.toUpperCase()
+      status: a.status.toUpperCase(),
     }));
 
-
-    const pending = normalized.filter(a => a.status === 'PENDING').length;
-    const completed = normalized.filter(a => a.status === 'COMPLETED').length;
-
+    const pending = normalized.filter((a) => a.status === "PENDING").length;
+    const completed = normalized.filter((a) => a.status === "COMPLETED").length;
 
     const statPending = document.getElementById("stat-pending");
     const statCompleted = document.getElementById("stat-completed");
 
-    if (statPending) statPending.innerText = pending.toString().padStart(2, '0');
-    if (statCompleted) statCompleted.innerText = completed.toString().padStart(2, '0');
-
-
+    if (statPending)
+      statPending.innerText = pending.toString().padStart(2, "0");
+    if (statCompleted)
+      statCompleted.innerText = completed.toString().padStart(2, "0");
+// Next Visit container
     const upcoming = normalized
-      .filter(a => a.status !== 'COMPLETED' && a.status !== 'CANCELLED')
-      .sort((a, b) => new Date(a.appointment_date) - new Date(b.appointment_date))[0];
+      .filter((a) => a.status !== "COMPLETED" && a.status !== "CANCELLED")
+      .sort(
+        (a, b) => new Date(a.appointment_date) - new Date(b.appointment_date),
+      )[0];
 
     const nextContainer = document.getElementById("next-visit-container");
     if (nextContainer) {
       if (upcoming) {
         const date = new Date(upcoming.appointment_date);
-        const [hoursStr, minutes] = upcoming.appointment_time.split(':');
+        const [hoursStr, minutes] = upcoming.appointment_time.split(":");
         const hours = parseInt(hoursStr);
-        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const ampm = hours >= 12 ? "PM" : "AM";
         const displayHours = hours % 12 || 12;
 
         nextContainer.innerHTML = `
@@ -122,7 +134,7 @@ async function loadNurseDashboard(user) {
                 Patient #${upcoming.patient_id}
               </h4>
               <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
-                ${upcoming.service_type || 'General Care'} • ${date.toLocaleDateString()}
+                ${upcoming.service_type || "General Care"} • ${date.toLocaleDateString()}
               </p>
               <div style="margin-top: 15px; display: flex; gap: 10px">
                 <button class="btn btn-primary btn-small">
@@ -136,7 +148,6 @@ async function loadNurseDashboard(user) {
         nextContainer.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted)">No upcoming visits scheduled.</p>`;
       }
     }
-
   } catch (error) {
     console.error("Dashboard Error:", error);
     const statPending = document.getElementById("stat-pending");
@@ -149,4 +160,3 @@ async function loadNurseDashboard(user) {
     }
   }
 }
-

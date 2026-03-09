@@ -1,4 +1,4 @@
-const API_URL = "https://elder-backend-a7db.vercel.app";
+const API_URL = "http://127.0.0.1:8000";
 let isRequestInProgress = false;
 let currentUser = null;
 
@@ -6,7 +6,6 @@ initPage();
 
 async function initPage() {
   const userStr = localStorage.getItem("user");
-  console.log(userStr)
   if (!userStr) {
     window.location.href = "login.html";
     return;
@@ -29,8 +28,7 @@ async function initPage() {
                         Go to Login
                     </button>
                 </div>
-            </div>
-          `;
+            </div>`;
     return;
   }
 
@@ -43,7 +41,6 @@ async function initPage() {
     if (currentUser) refreshDashboard(currentUser.id);
   }, 5000);
 
-  // Star rating events
   document.addEventListener("click", (e) => {
     if (e.target.parentElement && e.target.parentElement.id === "starContainer" && e.target.tagName === "I") {
       const value = parseInt(e.target.getAttribute("data-value"));
@@ -72,24 +69,16 @@ async function refreshDashboard(userId) {
   isRequestInProgress = true;
 
   try {
-    // ── 1. Appointments (for Recent Visits only) ──────────────────────
     const aptResponse = await fetch(
       `${API_URL}/appointments/patient/${userId}?t=${new Date().getTime()}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      },
+      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
     );
 
     if (aptResponse.ok) {
       const appointments = await aptResponse.json();
       allAppointments = appointments;
 
-      // Show all appointments in Recent Appointments
-      const recentApts = appointments
-        .sort((a, b) => new Date(b.appointment_date) - new Date(a.appointment_date));
-
+      const recentApts = appointments.sort((a, b) => new Date(b.appointment_date) - new Date(a.appointment_date));
       const visitList = document.getElementById("recentVisitsList");
       if (visitList) {
         if (recentApts.length === 0) {
@@ -98,7 +87,7 @@ async function refreshDashboard(userId) {
           visitList.innerHTML = recentApts.map(apt => {
             const nurseName = (apt.nurse_name || "Nurse Visit").replace(/'/g, "&#39;");
             const rateBtn = !apt.has_review
-              ? `<button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${nurseName}')" style="padding: 5px 10px; font-size: 0.7rem;">Write Review</button>`
+              ? `<button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${nurseName}')">Write Review</button>`
               : `<span style="font-size: 0.7rem; color: #10b981; font-weight: 700;"><i class="fas fa-star"></i> Reviewed</span>`;
             return `
             <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
@@ -107,7 +96,7 @@ async function refreshDashboard(userId) {
               </div>
               <div style="flex: 1">
                 <p style="font-weight: 700; font-size: 0.9rem">${apt.nurse_name || "Nurse Visit"}</p>
-                <p style="font-size: 0.75rem; color: var(--text-muted)">${new Date(apt.appointment_date).toLocaleDateString()} • ${apt.service_type || "General Care"}</p>
+                <p style="font-size: 0.75rem; color: var(--text-muted)">${new Date(apt.appointment_date).toLocaleDateString()}</p>
               </div>
               ${rateBtn}
             </li>`;
@@ -116,88 +105,41 @@ async function refreshDashboard(userId) {
       }
     }
 
-    // ── 2. Vitals ─────────────────────────────────────────────────────
     const vitalsResponse = await fetch(`${API_URL}/vitals/patient/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     });
     if (vitalsResponse.ok) {
       const vitals = await vitalsResponse.json();
       if (vitals.length > 0) {
         const latest = vitals[0];
-
-        document.getElementById("dash-bp").innerText =
-          latest.blood_pressure || "--";
-        document.getElementById("dash-hr").innerHTML =
-          `${latest.heart_rate || "--"} <small style="font-size: 1rem">BPM</small>`;
-        document.getElementById("dash-sugar").innerHTML =
-          `${latest.sugar_level || "--"} <small style="font-size: 1rem">mg/dL</small>`;
-
-        document.getElementById("reportsList").innerHTML = `
-          <li style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
-            <i class="fas fa-file-medical-alt" style="color: var(--primary); font-size: 1.5rem"></i>
-            <div>
-              <p style="font-weight: 700; font-size: 0.9rem">Health Summary</p>
-              <p style="font-size: 0.75rem; color: var(--text-muted)">Latest reading recorded</p>
-            </div>
-          </li>
-        `;
+        document.getElementById("dash-bp").innerText = latest.blood_pressure || "--";
+        document.getElementById("dash-hr").innerHTML = `${latest.heart_rate || "--"} <small>BPM</small>`;
+        document.getElementById("dash-sugar").innerHTML = `${latest.sugar_level || "--"} <small>mg/dL</small>`;
       }
     }
 
-    // ── 3. OAH Notice: Only show if an inquiry is accepted ───────────
     const oahContainer = document.getElementById("oahNoticeContainer");
-    if (oahContainer) {
-      oahContainer.innerHTML = ""; // clear before re-checking
-    }
-
     const inqResponse = await fetch(`${API_URL}/inquiries/patient/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     });
-
-    if (inqResponse.ok) {
+    if (inqResponse.ok && oahContainer) {
       const inquiries = await inqResponse.json();
       const acceptedInq = inquiries.find((i) => i.status === "accepted");
-
-      if (acceptedInq && oahContainer) {
+      if (acceptedInq) {
         const comm = acceptedInq.old_age_home || {};
-        const applicant = acceptedInq.applicant || {};
-        const applicantName = applicant.name || currentUser.full_name || "Applicant";
-        const oahEmail = comm.email || "N/A";
-
-        oahContainer.style.marginBottom = "0";
         oahContainer.innerHTML = `
-          <div class="glass-card animate-slide" style="background: #ecfdf5; border-color: #a7f3d0; display: flex; gap: 20px; align-items: center; margin-bottom: 0;">
-            <img src="${comm.image_url || "https://via.placeholder.com/100"}" 
-                 style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover; flex-shrink: 0;" />
-            <div style="flex: 1;">
-              <h3 style="color: #065f46; font-weight: 800; margin-bottom: 5px;">
-                <i class="fas fa-check-circle"></i> Your Old Age Home booking was successful!
-              </h3>
-              <p style="color: #047857; font-size: 0.95rem;">
-                <strong>${comm.name || "Community"}</strong> has accepted your request. They will contact you shortly.
-              </p>
-              <p style="margin-top: 5px; color: #047857; font-size: 0.9rem;">
-                <strong>Applicant:</strong> ${applicantName}
-              </p>
-              <p style="margin-top: 3px; color: #047857; font-size: 0.9rem;">
-                <i class="fas fa-envelope"></i> <strong>OAH Email:</strong> ${oahEmail}
-              </p>
-              <p style="margin-top: 3px; color: #047857; font-size: 0.9rem;">
-                <i class="fas fa-phone-alt"></i> ${comm.phone || "Contact Admin"}
-              </p>
+          <div class="glass-card" style="background: #ecfdf5; border-color: #a7f3d0; display: flex; gap: 20px; align-items: center;">
+            <img src="${comm.image_url || ""}" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover;" />
+            <div>
+              <h3 style="color: #065f46;">Booking Successful!</h3>
+              <p>${comm.name} accepted your request.</p>
+              <p>Email: ${comm.email || "N/A"}</p>
             </div>
-          </div>
-        `;
-      }
-      // If no accepted inquiry, oahContainer remains empty — nothing is shown
+          </div>`;
+      } else { oahContainer.innerHTML = ""; }
     }
-
   } catch (e) {
-    console.error("Auto-refresh error:", e);
+    console.error("Dashboard error:", e);
   } finally {
     isRequestInProgress = false;
   }
@@ -206,22 +148,20 @@ async function refreshDashboard(userId) {
 function openRecordsModal() {
   const container = document.getElementById("allRecordsContainer");
   if (!container) return;
-
   if (allAppointments.length === 0) {
     container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 40px;">No records found.</p>`;
   } else {
     container.innerHTML = allAppointments.sort((a, b) => b.id - a.id).map(apt => {
       const statusUp = (apt.status || "").trim().toUpperCase();
       let statusColor = "#64748b";
-      if (statusUp === "PENDING") statusColor = "#f59e0b"; // Orange
-      else if (statusUp === "ACCEPTED") statusColor = "#3b82f6"; // Blue
-      else if (statusUp === "ON_THE_WAY") statusColor = "#8b5cf6"; // Purple
-      else if (statusUp === "ARRIVED") statusColor = "#14b8a6"; // Teal
-      else if (statusUp === "COMPLETED") statusColor = "#10b981"; // Green
-      else if (statusUp === "REJECTED" || statusUp === "CANCELLED") statusColor = "#ef4444"; // Red
+      if (statusUp === "PENDING") statusColor = "#f59e0b";
+      else if (statusUp === "ACCEPTED") statusColor = "#3b82f6";
+      else if (statusUp === "ON_THE_WAY") statusColor = "#8b5cf6";
+      else if (statusUp === "ARRIVED") statusColor = "#14b8a6";
+      else if (statusUp === "COMPLETED") statusColor = "#10b981";
+      else if (statusUp === "REJECTED" || statusUp === "CANCELLED") statusColor = "#ef4444";
 
       const nurseName = (apt.nurse_name || "Nurse visit").replace(/'/g, "&#39;");
-
       const actionBtn = !apt.has_review
         ? `<button class="btn btn-primary btn-small" onclick="openReviewModal(${apt.id}, '${nurseName}')">Write Review</button>`
         : `<span style="color: #10b981; font-weight: 700; font-size: 0.9rem;"><i class="fas fa-star"></i> Reviewed</span>`;
@@ -230,22 +170,15 @@ function openRecordsModal() {
             <div style="background: #f8fafc; border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h4 style="font-weight: 800; color: #1e293b;">${apt.nurse_name || "Nurse visit"}</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0;">
-                        <i class="far fa-calendar-alt"></i> ${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}
-                    </p>
+                    <p style="font-size: 0.85rem;"><i class="far fa-calendar-alt"></i> ${new Date(apt.appointment_date).toLocaleDateString()} at ${apt.appointment_time}</p>
                     <span style="font-size: 0.75rem; font-weight: 700; color: ${statusColor}; text-transform: uppercase;">
                         ${apt.status === "CANCELLED" ? "REJECTED" : apt.status}
                     </span>
-                    ${(statusUp === "REJECTED" || statusUp === "CANCELLED") ? `
-                    <p style="margin-top: 5px; color: #ef4444; font-size: 0.8rem; font-weight: 600;">
-                        <i class="fas fa-info-circle"></i> Your appointment was rejected by the nurse.
-                    </p>` : ""}
                 </div>
                 <div>${actionBtn}</div>
             </div>`;
     }).join("");
   }
-
   openModal("recordsModal");
 }
 
@@ -253,51 +186,26 @@ function openReviewModal(appointmentId, nurseName) {
   currentReviewAppointmentId = appointmentId;
   const nameSpan = document.getElementById("nurseNameRating");
   if (nameSpan) nameSpan.innerText = nurseName;
-
-  // Reset stars
   currentRating = 5;
   const stars = document.querySelectorAll("#starContainer i");
-  stars.forEach(s => {
-    s.style.color = "#ffd700";
-    s.className = "fas fa-star";
-  });
-
+  stars.forEach(s => { s.style.color = "#ffd700"; s.className = "fas fa-star"; });
   document.getElementById("reviewText").value = "";
-
   openModal("reviewModal");
 }
 
 async function submitReview() {
   if (!currentReviewAppointmentId) return;
-
-  const comment = document.getElementById("reviewText").value;
-
   try {
     const response = await fetch(`${API_URL}/reviews/`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      },
-      body: JSON.stringify({
-        appointment_id: currentReviewAppointmentId,
-        rating: currentRating,
-        comment: comment
-      })
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+      body: JSON.stringify({ appointment_id: currentReviewAppointmentId, rating: currentRating, comment: document.getElementById("reviewText").value })
     });
-
     if (response.ok) {
       showToast("Thank you for your feedback!");
       closeModal("reviewModal");
       closeModal("recordsModal");
-      if (currentUser) refreshDashboard(currentUser.id);
-    } else {
-      const err = await response.json();
-      const msg = typeof getErrorMessage !== "undefined" ? getErrorMessage(err.detail) : (err.detail || "Failed to submit rating");
-      showToast(msg, "error");
+      refreshDashboard(currentUser.id);
     }
-  } catch (e) {
-    console.error(e);
-    showToast("Connection error", "error");
-  }
+  } catch (e) { console.error(e); }
 }

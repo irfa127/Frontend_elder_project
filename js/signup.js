@@ -4,9 +4,15 @@ document.querySelectorAll(".role-option").forEach((m) => {
       .querySelectorAll(".role-option")
       .forEach((n) => n.classList.remove("active"));
     m.classList.add("active");
-    document.getElementById("role").value = m.dataset.role;
+    const role = m.dataset.role;
+    document.getElementById("role").value = role;
+
   });
 });
+
+// Initialize on page load
+const activeRole = document.querySelector(".role-option.active");
+if (activeRole) activeRole.click();
 
 const form = document.getElementById("signupForm");
 
@@ -68,7 +74,7 @@ form.addEventListener("submit", async (a) => {
       body: JSON.stringify(userData),
     });
     const data = await response.json();
-    
+
     console.log(response)
     // console.log(data)
 
