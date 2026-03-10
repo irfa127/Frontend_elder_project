@@ -140,7 +140,7 @@ async function refreshUserData(userId) {
   }
 
   try {
-    const response = await fetch(`http://127.0.0.1:8000/users/${userId}`, {
+    const response = await fetch(`https://elder-backend-a7db.vercel.app/users/${userId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },

@@ -3,7 +3,7 @@ initPage();
 async function initPage() {
   const container = document.getElementById("communitiesContainer");
   try {
-    const response = await fetch("http://127.0.0.1:8000/communities/", {
+    const response = await fetch("https://elder-backend-a7db.vercel.app/communities/", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },

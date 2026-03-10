@@ -21,7 +21,7 @@ async function initPage() {
 
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/appointments/${id}`, {
+      const response = await fetch(`https://elder-backend-a7db.vercel.app/appointments/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +77,7 @@ async function initPage() {
 async function loadNurseDashboard(user) {
   try {
     const response = await fetch(
-      `http://127.0.0.1:8000/appointments/nurse/${user.id}`,
+      `https://elder-backend-a7db.vercel.app/appointments/nurse/${user.id}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

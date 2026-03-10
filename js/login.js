@@ -1,5 +1,5 @@
+ 
 initPage();
-
 async function initPage() {
     const loginForm = document.getElementById("loginForm");
     if (loginForm) {
@@ -48,28 +48,29 @@ async function initPage() {
                     } else if (role === "oah_manager") {
                         window.location.href = "oah-dashboard.html";
                     }
-                } else {
-                    let errorMessage = "Login failed. Please check your credentials.";
-                    if (data.detail) {
-                        if (typeof data.detail === "string") {
-                            errorMessage = data.detail;
-                        } else if (Array.isArray(data.detail)) {
-                            errorMessage = data.detail
-                                .map((err) => err.msg || JSON.stringify(err))
-                                .join(", ");
-                        } else {
-                            errorMessage = data.detail.message || JSON.stringify(data.detail);
-                        }
-                    }
-                    errorDiv.textContent = errorMessage;
+                } else if (response.status == 401) {
+                    let errorMessage = data.detail;
+                    // if (data.detail) {
+                    //     if (typeof data.detail === "string") {
+                    //         errorMessage = data.detail;
+                    //     } else if (Array.isArray(data.detail)) {
+                    //         errorMessage = data.detail
+                    //             .map((err) => err.msg || JSON.stringify(err))
+                    //             .join(", ");
+                    //     } else {
+                    //         errorMessage = data.detail.message || JSON.stringify(data.detail);
+                    //     }
+                    // }
+                    errorDiv.textContent = data.detail;
                     errorDiv.style.display = "block";
                 }
             } catch (error) {
-                errorDiv.textContent =
-                    "Connection error. Please make sure the backend is running.";
+                errorDiv.textContent = error.message;
                 errorDiv.style.display = "block";
                 console.error("Error:", error);
             }
         });
     }
 }
+
+
