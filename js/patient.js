@@ -128,12 +128,20 @@ async function refreshDashboard(userId) {
       if (acceptedInq) {
         const comm = acceptedInq.old_age_home || {};
         oahContainer.innerHTML = `
-          <div class="glass-card" style="background: #ecfdf5; border-color: #a7f3d0; display: flex; gap: 20px; align-items: center;">
-            <img src="${comm.image_url || ""}" style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover;" />
-            <div>
-              <h3 style="color: #065f46;">Booking Successful!</h3>
-              <p>${comm.name} accepted your request.</p>
-              <p>Email: ${comm.email || "N/A"}</p>
+          <div class="booking-success-banner">
+            <div class="banner-image-wrapper">
+              <img src="${comm.image_url || ""}" class="banner-image" onerror="this.src='https://ui-avatars.com/api/?name=H&background=dcfce7&color=166534'" />
+              <div class="success-badge-mini">
+                <i class="fas fa-check"></i>
+              </div>
+            </div>
+            <div class="banner-content">
+              <h3 class="banner-title">Booking Successful!</h3>
+              <p class="banner-subtitle">${comm.name} accepted your request.</p>
+              <div class="banner-meta">
+                <i class="fas fa-envelope"></i>
+                <span>Email: ${comm.email || "N/A"}</span>
+              </div>
             </div>
           </div>`;
       } else { oahContainer.innerHTML = ""; }
