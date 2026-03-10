@@ -46,8 +46,8 @@
           <input type="hidden" id="role" value="patient" />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Full Name</label>
+        <div class="form-group" id="fullNameGroup">
+          <label class="form-label" id="nameLabel">Full Name</label>
           <input type="text" class="form-input" id="fullName" placeholder="Irfana Nasrin" required />
         </div>
 
@@ -58,13 +58,64 @@
           </div>
           <div class="form-group">
             <label class="form-label">Phone</label>
-            <input type="tel" class="form-input" id="phone" placeholder="9167894327" />
+            <input type="tel" class="form-input" id="phone" placeholder="9167894327" required />
           </div>
         </div>
 
         <div class="form-group">
           <label class="form-label">Email Address</label>
           <input type="email" class="form-input" id="email" placeholder="your.email@example.com" required />
+        </div>
+
+        <!-- Nurse Specific Fields -->
+        <div id="nurseFields" style="display: none;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nursing License Number</label>
+              <input type="text" class="form-input" id="licenseNumber" placeholder="NL123456" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Experience (Years)</label>
+              <input type="number" class="form-input" id="experienceYears" placeholder="2" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Qualification</label>
+              <select class="form-input" id="qualification">
+                <option value="">Select Qualification</option>
+                <option value="GNM">GNM</option>
+                <option value="BSc Nursing">BSc Nursing</option>
+                <option value="Diploma">Diploma</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Specialization</label>
+              <select class="form-input" id="specialization">
+                <option value="">Select Specialization</option>
+                <option value="Elder care">Elder care</option>
+                <option value="ICU care">ICU care</option>
+                <option value="Bedridden patient care">Bedridden patient care</option>
+                <option value="Post-surgery care">Post-surgery care</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Government ID Upload (Aadhar / PAN)</label>
+            <input type="file" class="form-input" id="governmentIdFile" accept="image/*,.pdf" />
+          </div>
+        </div>
+
+        <!-- OAH Specific Fields -->
+        <div id="oahFields" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Total Beds</label>
+            <input type="number" class="form-input" id="totalBeds" placeholder="50" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Registration Certificate Upload</label>
+            <input type="file" class="form-input" id="regCertificateFile" accept="image/*,.pdf" />
+          </div>
         </div>
 
         <div class="form-group">

@@ -7,6 +7,24 @@ document.querySelectorAll(".role-option").forEach((m) => {
     const role = m.dataset.role;
     document.getElementById("role").value = role;
 
+    // Show/Hide Role Specific Fields
+    const nurseFields = document.getElementById("nurseFields");
+    const oahFields = document.getElementById("oahFields");
+    const nameLabel = document.getElementById("nameLabel");
+
+    if (role === "nurse") {
+      nurseFields.style.display = "block";
+      oahFields.style.display = "none";
+      nameLabel.textContent = "Full Name";
+    } else if (role === "oah_manager") {
+      nurseFields.style.display = "none";
+      oahFields.style.display = "block";
+      nameLabel.textContent = "Old Age Home Name";
+    } else {
+      nurseFields.style.display = "none";
+      oahFields.style.display = "none";
+      nameLabel.textContent = "Full Name";
+    }
   });
 });
 
