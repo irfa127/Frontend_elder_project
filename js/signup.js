@@ -48,6 +48,15 @@ form.addEventListener("submit", async (a) => {
     role: document.getElementById("role").value,
     phone: document.getElementById("phone").value.trim(),
     address: document.getElementById("address").value.trim(),
+    // Nurse specific
+    license_number: document.getElementById("licenseNumber").value.trim(),
+    experience_years: parseInt(document.getElementById("experienceYears").value) || null,
+    qualification: document.getElementById("qualification").value,
+    specialization: document.getElementById("specialization").value,
+    government_id: document.getElementById("governmentIdFile").value.trim(),
+    // OAH specific
+    total_beds: parseInt(document.getElementById("totalBeds").value) || null,
+    registration_certificate: document.getElementById("regCertificateFile").value.trim(),
   };
 
   // Form Validation

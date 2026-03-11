@@ -105,12 +105,16 @@ async function fetchNurses() {
                 <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(nurse.full_name)}&background=eff6ff&color=3b82f6" 
                      style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;" />
                 <div style="flex: 1">
-                    <h4 style="font-weight: 800">${nurse.full_name}</h4>
-                    <p style="font-size: 0.85rem; color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 8px;">
-                        <span>Registered Nurse</span>
+                    <h4 style="font-weight: 800; margin-bottom: 4px;">${nurse.full_name}</h4>
+                    <p style="font-size: 0.85rem; color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                        <span>${nurse.specialization || "Registered Nurse"}</span>
                         <span style="color: #f59e0b"><i class="fas fa-star"></i> ${nurse.rating || "NEW"}</span>
                     </p>
-                    <p style="font-size: 0.8rem; color: #64748b;">${nurse.address || "Location N/A"}</p>
+                    <div style="font-size: 0.75rem; color: #64748b; display: flex; flex-direction: column; gap: 2px;">
+                        <span><i class="fas fa-user-graduate"></i> <b>Qualification:</b> ${nurse.qualification || "N/A"}</span>
+                        <span><i class="fas fa-briefcase"></i> <b>Experience:</b> ${nurse.experience_years || "0"}+ Years</span>
+                        <span><i class="fas fa-map-marker-alt"></i> ${nurse.address || "Location N/A"}</span>
+                    </div>
                 </div>
                 <button class="btn btn-primary" onclick="selectNurse('${nurse.full_name.replace(/'/g, "\\'")}', ${nurse.id})">
                     Book Now

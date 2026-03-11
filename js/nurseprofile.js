@@ -58,6 +58,12 @@ async function loadProfile() {
     document.getElementById("inputEmail").value = user.email;
     document.getElementById("inputPhone").value = user.phone || "";
     document.getElementById("inputAddress").value = user.address || "";
+
+    // Professional Details
+    if (document.getElementById("inputLicense")) document.getElementById("inputLicense").value = user.license_number || "";
+    if (document.getElementById("inputQualification")) document.getElementById("inputQualification").value = user.qualification || "";
+    if (document.getElementById("inputExperience")) document.getElementById("inputExperience").value = user.experience_years || "";
+    if (document.getElementById("inputSpecialization")) document.getElementById("inputSpecialization").value = user.specialization || "";
   } catch (e) {
     console.error("Error loading profile", e);
   }
@@ -97,7 +103,11 @@ async function updateProfile() {
     full_name: newName,
     email: newEmail,
     phone: newPhone,
-    address: newAddress
+    address: newAddress,
+    license_number: document.getElementById("inputLicense") ? document.getElementById("inputLicense").value.trim() : currentUser.license_number,
+    qualification: document.getElementById("inputQualification") ? document.getElementById("inputQualification").value : currentUser.qualification,
+    experience_years: document.getElementById("inputExperience") ? parseInt(document.getElementById("inputExperience").value) || 0 : currentUser.experience_years,
+    specialization: document.getElementById("inputSpecialization") ? document.getElementById("inputSpecialization").value.trim() : currentUser.specialization
   };
 
   if (newPassword) {
