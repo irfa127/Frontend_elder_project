@@ -67,6 +67,66 @@
           <input type="email" class="form-input" id="email" placeholder="your.email@example.com" required />
         </div>
 
+        <!-- Patient Specific Fields -->
+        <div id="patientFields">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Date of Birth</label>
+              <input type="date" class="form-input" id="dob" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gender</label>
+              <select class="form-input" id="gender">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Blood Group</label>
+              <select class="form-input" id="bloodGroup">
+                <option value="">Select Blood Group</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mobility Status</label>
+              <select class="form-input" id="mobilityStatus">
+                <option value="">Select Mobility</option>
+                <option value="Walking">Walking</option>
+                <option value="Walking Support">Walking Support</option>
+                <option value="Wheelchair">Wheelchair</option>
+                <option value="Bedridden">Bedridden</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Emergency Contact Name</label>
+              <input type="text" class="form-input" id="emergencyName" placeholder="Name" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Emergency Contact Phone</label>
+              <input type="tel" class="form-input" id="emergencyPhone" placeholder="Phone" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Medical Condition</label>
+            <textarea class="form-input" id="medicalCondition" placeholder="e.g. Diabetes, BP, Heart Problem..."
+              rows="2"></textarea>
+          </div>
+        </div>
+
         <!-- Nurse Specific Fields -->
         <div id="nurseFields" style="display: none;">
           <div class="form-row">
@@ -102,7 +162,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">Government ID (Aadhar / PAN)</label>
-            <input type="text" class="form-input" id="governmentIdFile"  />
+            <input type="text" class="form-input" id="governmentIdFile" />
           </div>
         </div>
 

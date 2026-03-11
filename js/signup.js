@@ -8,19 +8,23 @@ document.querySelectorAll(".role-option").forEach((m) => {
     document.getElementById("role").value = role;
 
     // Show/Hide Role Specific Fields
+    const patientFields = document.getElementById("patientFields");
     const nurseFields = document.getElementById("nurseFields");
     const oahFields = document.getElementById("oahFields");
     const nameLabel = document.getElementById("nameLabel");
 
     if (role === "nurse") {
+      patientFields.style.display = "none";
       nurseFields.style.display = "block";
       oahFields.style.display = "none";
       nameLabel.textContent = "Full Name";
     } else if (role === "oah_manager") {
+      patientFields.style.display = "none";
       nurseFields.style.display = "none";
       oahFields.style.display = "block";
       nameLabel.textContent = "Old Age Home Name";
     } else {
+      patientFields.style.display = "block";
       nurseFields.style.display = "none";
       oahFields.style.display = "none";
       nameLabel.textContent = "Full Name";
@@ -48,6 +52,14 @@ form.addEventListener("submit", async (a) => {
     role: document.getElementById("role").value,
     phone: document.getElementById("phone").value.trim(),
     address: document.getElementById("address").value.trim(),
+    // Patient specific
+    dob: document.getElementById("dob").value,
+    gender: document.getElementById("gender").value,
+    blood_group: document.getElementById("bloodGroup").value,
+    emergency_contact_name: document.getElementById("emergencyName").value.trim(),
+    emergency_contact_phone: document.getElementById("emergencyPhone").value.trim(),
+    medical_condition: document.getElementById("medicalCondition").value.trim(),
+    mobility_status: document.getElementById("mobilityStatus").value,
     // Nurse specific
     license_number: document.getElementById("licenseNumber").value.trim(),
     experience_years: parseInt(document.getElementById("experienceYears").value) || null,
@@ -90,6 +102,35 @@ form.addEventListener("submit", async (a) => {
     errorDiv.textContent = "Please enter a valid 10-digit phone number.";
     errorDiv.style.display = "block";
     return;
+  }
+
+  // Patient Specific Validation
+  if (userData.role === "patient") {
+    if (!userData.dob) {
+      errorDiv.textContent = "Date of Birth is required for Patients.";
+      errorDiv.style.display = "block";
+      return;
+    }
+    if (!userData.gender) {
+      errorDiv.textContent = "Gender is required.";
+      errorDiv.style.display = "block";
+      return;
+    }
+    if (!userData.blood_group) {
+      errorDiv.textContent = "Blood Group is required.";
+      errorDiv.style.display = "block";
+      return;
+    }
+    if (!userData.emergency_contact_name || !userData.emergency_contact_phone) {
+      errorDiv.textContent = "Emergency contact details are required.";
+      errorDiv.style.display = "block";
+      return;
+    }
+    if (!userData.mobility_status) {
+      errorDiv.textContent = "Mobility Status is required.";
+      errorDiv.style.display = "block";
+      return;
+    }
   }
 
   try {
