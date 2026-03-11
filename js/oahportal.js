@@ -42,6 +42,7 @@ function populateForm(data) {
   document.getElementById("editPrice").value = data.pricing || data.price_range || data.price || "";
   document.getElementById("editPhone").value = data.phone || "";
   document.getElementById("totalBeds").value = data.total_beds || "";
+  document.getElementById("registrationId").value = data.registration_id || "";
   document.getElementById("editImg").value = data.image_url || "";
   document.getElementById("editLabel").value =
     data.specialty_label || "Personalized Care";
@@ -99,6 +100,7 @@ async function saveChanges() {
     image_url: document.getElementById("editImg").value,
     specialty_label: document.getElementById("editLabel").value,
     total_beds: parseInt(document.getElementById("totalBeds").value) || 0,
+    registration_id: document.getElementById("registrationId").value.trim(),
     facilities: checkedFacilities,
   };
 

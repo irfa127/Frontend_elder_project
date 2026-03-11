@@ -59,6 +59,10 @@ async function initPage() {
                           <div class="price-tag" style="margin: 10px 0; color: #059669; font-weight:700;">
                                 ${(comm.pricing || comm.price_range || comm.price) ? `${comm.pricing || comm.price_range || comm.price} per month` : 'Contact for pricing'}
                           </div>
+                          <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px;">
+                            <span><i class="fas fa-bed"></i> <b>Available Beds:</b> ${comm.total_beds || "0"}</span>
+                            <span><i class="fas fa-id-card"></i> <b>Reg ID:</b> ${comm.registration_id || "N/A"}</span>
+                          </div>
                           <div class="tag-container">
                             ${tagsHTML}
                           </div>
