@@ -102,10 +102,33 @@ async function fetchAppointments() {
       }
       statusButtons += `</div>`;
 
+      const getAge = (dob) => {
+        if (!dob) return "N/A";
+        try {
+          const birthDate = new Date(dob);
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const m = today.getMonth() - birthDate.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+          return age;
+        } catch(e) { return "N/A"; }
+      };
+
       const patientImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(apt.patient_name)}&background=random`;
       const card = document.createElement("div");
       card.className = "apt-info-card animate-fade";
       card.setAttribute("data-aos", "fade-up");
+      
+      const patientDetailsHtml = `
+        <div class="patient-details-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 20px 0; padding: 15px; background: rgba(139, 92, 246, 0.05); border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.1);">
+          <div><div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px;">Age / Gender</div><div style="font-weight: 600; color: white;">${getAge(apt.patient_dob)} yrs / ${apt.patient_gender || 'N/A'}</div></div>
+          <div><div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px;">Blood Group</div><div style="font-weight: 700; color: #f87171;">${apt.patient_blood_group || 'N/A'}</div></div>
+          <div><div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px;">Mobility</div><div style="font-weight: 600; color: white;">${apt.patient_mobility_status || 'N/A'}</div></div>
+          <div><div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px;">Emergency Contact</div><div style="font-weight: 600; color: white; font-size: 0.8rem;">${apt.patient_emergency_contact_name || 'N/A'} <br> ${apt.patient_emergency_contact_phone || ''}</div></div>
+          <div style="grid-column: 1 / -1;"><div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px;">Medical Condition</div><div style="font-weight: 600; color: #fdba74;">${apt.patient_medical_condition || 'No specific conditions reported'}</div></div>
+        </div>
+      `;
+
       card.innerHTML = `
               <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
                 <div style="display: flex; gap: 15px; align-items: center;">
@@ -114,10 +137,19 @@ async function fetchAppointments() {
                 </div>
                 <span class="badge badge-${statusClass}" style="${statusStyle}">${displayStatus}</span>
               </div>
-              <div style="display: flex; gap: 30px; margin-bottom: 30px;">
+              <div style="display: flex; gap: 30px; margin-bottom: 15px;">
                 <div><div style="font-size: 0.75rem; color: var(--text-muted);">DATE</div><div style="font-weight: 700;">${date}</div></div>
                 <div><div style="font-size: 0.75rem; color: var(--text-muted);">TIME</div><div style="font-weight: 700;">${time}</div></div>
+                <div><div style="font-size: 0.75rem; color: var(--text-muted);">SERVICE</div><div style="font-weight: 700;">${apt.service_type || "General Care"}</div></div>
               </div>
+
+              ${patientDetailsHtml}
+
+              <div style="margin-bottom: 20px;">
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px;">PATIENT NOTES</div>
+                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; font-size: 0.9rem; border: 1px dashed rgba(255,255,255,0.1);">${apt.notes || "No extra notes."}</div>
+              </div>
+
               ${statusButtons}`;
       container.appendChild(card);
     });

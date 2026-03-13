@@ -106,8 +106,10 @@ async function initPage() {
                   <i class="fas fa-user-tag"></i> Status: <strong style="color: ${inq.status === "pending" ? "var(--warning)" : "#10b981"}">${inq.status.toUpperCase()}</strong>
                   • <i class="fas fa-calendar-alt"></i> Move-in: ${inq.move_in_date || "TBD"}
                 </p>
-                <div style="margin-top: 8px; font-size: 0.8rem; color: #64748b">
-                   <i class="fas fa-notes-medical"></i> Needs: ${inq.medical_needs || "None listed"}
+                <div style="margin-top: 8px; font-size: 0.8rem; color: #64748b; display: flex; gap: 15px; flex-wrap: wrap;">
+                   <span><i class="fas fa-tint" style="color: #ef4444"></i> Blood: ${applicant.blood_group || 'N/A'}</span>
+                   <span><i class="fas fa-notes-medical"></i> Needs: ${inq.medical_needs || "General"}</span>
+                   <span title="${applicant.medical_condition || 'None'}"><i class="fas fa-history"></i> Condition: ${applicant.medical_condition ? (applicant.medical_condition.substring(0, 20) + '...') : 'Normal'}</span>
                 </div>
               </div>
               <div class="inquiry-actions">
@@ -174,13 +176,34 @@ function viewInquiryDetails(id) {
   const applicant = inq.applicant || {};
 
   alert(`
-    Inquiry Details:
+    INQUIRY DETAILS
+    -------------------------
     Resident: ${inq.resident_name}
     Age: ${inq.resident_age}
-    Applicant: ${applicant.name} (${inq.relation})
-    Contact: ${applicant.phone} | ${applicant.email}
-    Needs: ${inq.medical_needs}
-    Requests: ${inq.special_requests}
+    Relation: ${inq.relation || 'N/A'}
+    
+    MEDICAL INFORMATION
+    -------------------------
+    Blood Group: ${applicant.blood_group || 'N/A'}
+    Medical Condition: ${applicant.medical_condition || 'N/A'}
+    Mobility: ${applicant.mobility_status || 'N/A'}
+    Specific Needs: ${inq.medical_needs || 'None'}
+    
+    APPLICANT CONTACT
+    -------------------------
+    Name: ${applicant.name}
+    Phone: ${applicant.phone || 'N/A'}
+    Email: ${applicant.email || 'N/A'}
+    
+    EMERGENCY CONTACT
+    -------------------------
+    Name: ${applicant.emergency_contact_name || 'N/A'}
+    Phone: ${applicant.emergency_contact_phone || 'N/A'}
+    
+    LOGISTICS
+    -------------------------
+    Move-in Date: ${inq.move_in_date || 'TBD'}
+    Special Requests: ${inq.special_requests || 'None'}
     `);
 }
 
