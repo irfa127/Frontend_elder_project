@@ -94,8 +94,8 @@ body {
 }
 
 .nav-link:hover {
-  background: var(--bg-body);
-  color: var(--text-main);
+  background: #f0f7ff;
+  color: #007bff;
 }
 
 .nav-link.active {
