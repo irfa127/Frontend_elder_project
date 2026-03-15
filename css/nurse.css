@@ -130,3 +130,15 @@
   font-weight: 600;
   backdrop-filter: blur(5px);
 }
+
+/* Sidebar Navigation Blue Overrides specifically for Nurse interface */
+.nav-link:hover {
+  background: #f0f7ff !important;
+  color: #007bff !important;
+}
+
+.nav-link.active {
+  background: #f0f7ff !important;
+  color: #007bff !important;
+  font-weight: 700 !important;
+}

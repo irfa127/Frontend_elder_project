@@ -94,13 +94,13 @@ body {
 }
 
 .nav-link:hover {
-  background: #f0f7ff;
-  color: #007bff;
+  background: var(--bg-body);
+  color: var(--text-main);
 }
 
 .nav-link.active {
-  background: #f0f7ff;
-  color: #007bff;
+  background: var(--primary-light);
+  color: var(--primary);
   font-weight: 700;
 }
 
