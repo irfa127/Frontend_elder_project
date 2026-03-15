@@ -29,7 +29,7 @@ document.querySelectorAll(".role-option").forEach((m) => {
       oahFields.style.display = "none";
       nameLabel.textContent = "Full Name";
     }
-  });w
+  });
 });
 
 // Initialize on page load
