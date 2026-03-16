@@ -1,4 +1,4 @@
-import {viewInquiryDetails} from "./oahdashboard.js"
+
 const API_URL = "https://elder-backend-a7db.vercel.app";
 let isRequestInProgress = false;
 let currentUser = null;
