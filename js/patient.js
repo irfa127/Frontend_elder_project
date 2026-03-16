@@ -136,7 +136,7 @@ async function refreshDashboard(userId) {
               </div>
             </div>
             <div class="banner-content">
-              <h3 class="banner-title">Booking Successful!</h3>
+              <h3 class="banner-title">${currentUser.full_name}!</h3>
               <p class="banner-subtitle">${comm.name} accepted your request.</p>
               <div class="banner-meta">
                 <i class="fas fa-envelope"></i>
