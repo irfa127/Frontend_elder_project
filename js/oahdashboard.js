@@ -170,7 +170,7 @@ async function updateInquiryStatus(id, newStatus) {
   }
 }
 
-function viewInquiryDetails(id) {
+export function viewInquiryDetails(id) {
   const inq = window.currentInquiries.find((i) => i.booking_id === id);
   if (!inq) return;
   const applicant = inq.applicant || {};
@@ -222,3 +222,4 @@ function viewInquiryDetails(id) {
 //       Request : ${inq.special_requests},
 //     `);
 // }
+

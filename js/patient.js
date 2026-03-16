@@ -1,3 +1,4 @@
+import {viewInquiryDetails} from "./oahdashboard.js"
 const API_URL = "https://elder-backend-a7db.vercel.app";
 let isRequestInProgress = false;
 let currentUser = null;
@@ -136,7 +137,7 @@ async function refreshDashboard(userId) {
               </div>
             </div>
             <div class="banner-content">
-              <h3 class="banner-title">${currentUser.full_name}!</h3>
+              <h3 class="banner-title">${viewInquiryDetails.resident_name} has been added Successfully !</h3>
               <p class="banner-subtitle">${comm.name} accepted your request.</p>
               <div class="banner-meta">
                 <i class="fas fa-envelope"></i>
