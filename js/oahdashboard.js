@@ -223,4 +223,3 @@ function viewInquiryDetails(id) {
 //     `);
 // }
 
-export default inq
